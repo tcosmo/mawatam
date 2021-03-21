@@ -1,6 +1,6 @@
-# datam-sim
+# datam
 
-`datam-sim` is a simulator for the datam. It is written in C++ and uses the SFML as graphic library.
+`datam` is a simulator for the datam. It is written in C++ and uses the SFML as graphic library.
 
 ## Dependencies
 
@@ -26,12 +26,12 @@ conan config set general.revisions_enabled=1
 
 ```bash
 git clone
-cd datam-sim
+cd datam
 mkdir build
 conan install ..
 cmake ..
 make
-(cd bin && ./bin/datam-sim <configuration_file.txt>)
+(cd bin && ./bin/datam <configuration_file.txt>)
 ```
 
 ## Input format
