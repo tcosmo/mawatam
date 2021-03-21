@@ -6,21 +6,7 @@
 
 We use the SFML, a powerful graphics, game and media library.
 
-We use conan to manage our dependencies, in particular SDL: [https://docs.conan.io/en/latest/getting_started.html](https://docs.conan.io/en/latest/getting_started.html).
-
-You can install conan using python (>3):
-
-```bash
-python3 -m pip install conan
-export PATH="${HOME}/.local/bin":$PATH
-```
-
-SFML is not available on the standard conan repository, you have to add the `bincrafters` repository:
-
-```bash
-conan remote add bincrafters https://bincrafters.jfrog.io/artifactory/api/conan/public-conan
-conan config set general.revisions_enabled=1
-```
+On Debian/Ubuntu, you can install SFML with: `sudo apt install libsfml-dev`, please refer to [this guide](https://www.sfml-dev.org/tutorials/2.5/) for other systems.
 
 ## Build
 
@@ -28,15 +14,14 @@ conan config set general.revisions_enabled=1
 git clone
 cd datam
 mkdir build
-conan install ..
 cmake ..
 make
-(cd bin && ./bin/datam <configuration_file.txt>)
+./datam <input_file.txt>
 ```
 
 ## Input format
 
-Here is an example configuration file:
+Here is an example input file:
 
 ```
 ; Collatz tileset
