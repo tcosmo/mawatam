@@ -1,0 +1,31 @@
+; Collatz tileset
+
+; format for glues is:
+; "<glue_name>": <glue_strength>
+; There is an implicit glue present in all systems: null of strength 0
+glues:
+  "bin,0": 1
+  "bin,1": 1
+  "ter,0": 1
+  "ter,1": 1
+  "ter,2": 1
+
+; format for tile types is:
+; "<tile_type_name>": <north_glue_name>; <east_glue_name>; <south_glue_name>; <east_glue_name>;
+tile_types:
+  "0": "bin,0"; "ter,0"; "bin,0"; "ter,0";
+  "1": "bin,0"; "ter,1"; "bin,1"; "ter,0";
+  "2": "bin,0"; "ter,2"; "bin,0"; "ter,1";
+  "3": "bin,1"; "ter,0"; "bin,1"; "ter,1";
+  "4": "bin,1"; "ter,1"; "bin,0"; "ter,2";
+  "5": "bin,1"; "ter,2"; "bin,1"; "ter,2";
+
+; format for input is either:
+; <x>,<y>: "<tile_type_name>"
+; if you want to use a defined tile type (NOT IMPLEM) or:
+; <x>,<y>: "<north_glue_name>"; "<east_glue_name>"; "<south_glue_name>"; "<east_glue_name>";
+; if you want to use a custom colored square which is not in your tileset.
+; (it wont be added to your tileset), it is mainly how we specify input confgurations in the datam
+input:
+  0,0: null; null; null; "ter,0";
+  -1,-1: "bin,0"; null; null; null;

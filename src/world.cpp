@@ -34,6 +34,8 @@ std::vector<TileType*> Tileset::query(
 Tileset::Tileset(const std::vector<TileType>& tile_types)
     : tile_types(tile_types) {}
 
+World::World() {}
+
 World::World(const Tileset& tileset,
              const std::map<sf::Vector2i, TileType*, CompareSfVector2i>& tiles)
     : tileset(tileset), tiles(tiles) {
