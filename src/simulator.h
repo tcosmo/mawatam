@@ -4,14 +4,11 @@
 #include <SFML/Window.hpp>
 
 #include "utils.h"
-#include "world.h"
 #include "view.h"
-
-static const int TARGET_FPS = 30;
+#include "world.h"
 
 class Simulator {
  public:
-
   Simulator(World& world, WorldView& world_view, int screen_w, int screen_h);
   void run();
 
@@ -22,7 +19,6 @@ class Simulator {
 
   World& world;
   WorldView& world_view;
-
 
   sf::RenderWindow window;
 

@@ -3,13 +3,10 @@
 #include <assert.h>
 
 #include <SFML/Graphics.hpp>
-#include <cstdio>
 #include <cmath>
+#include <cstdio>
 
-// Trigger debut printing
-#define DEBUG 1
-
-static const char* PROGRAM_NAME = "datam";
+#include "config.h"
 
 struct CompareSfVector2i {
   bool operator()(const sf::Vector2<int> &a, const sf::Vector2<int> &b) const {

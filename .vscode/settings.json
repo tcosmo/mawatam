@@ -49,6 +49,8 @@
     "chrono": "cpp",
     "codecvt": "cpp",
     "ratio": "cpp",
-    "iomanip": "cpp"
+    "iomanip": "cpp",
+    "iostream": "cpp",
+    "*.in": "cpp"
   }
 }

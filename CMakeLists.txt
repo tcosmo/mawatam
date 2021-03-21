@@ -8,7 +8,10 @@ set(datam_VERSION_MINOR 0)
 set(datam_VERSION_PATCH 1)
 set(datam_PROG_NAME "datam")
 set(datam_PROG_NAME_EXEC "datam")
-
+configure_file(
+  "${PROJECT_SOURCE_DIR}/src/config.h.in"
+  "${PROJECT_SOURCE_DIR}/src/config.h"
+  )
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)

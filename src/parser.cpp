@@ -29,9 +29,8 @@ void World::from_file(std::string file_path) {
   std::string content((std::istreambuf_iterator<char>(ifs)),
                       (std::istreambuf_iterator<char>()));
 
-  printf("Parsing `%s`...\n", file_path.c_str());
+  printf("Input file: %s\n", file_path.c_str());
   from_file_content(content);
-  printf("Parsing done!");
 }
 
 std::string get_enclosed_content(const std::string& container,
@@ -206,6 +205,7 @@ sf::Vector2i parse_coords(const std::string& spec) {
 }
 
 void World::from_file_content(const std::string& file_content) {
+  printf("Parsing...\n");
   std::string file_content_copy = file_content;
   size_t pos = 0;
   std::string token;
@@ -358,9 +358,11 @@ void World::from_file_content(const std::string& file_content) {
       }
 
       tiles[coords] = to_point;
-      printf("[parser] Found square at pos (%d, %d)!\n", coords.x, coords.y);
+      if (DEBUG)
+        printf("[parser] Found square at pos (%d, %d)!\n", coords.x, coords.y);
     }
   }
 
   tileset.tile_types = std::move(tile_types);
+  printf("Parsing successful!\n");
 }

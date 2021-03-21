@@ -6,6 +6,6 @@ int main(int argc, char** argv) {
 
   WorldView world_view;
 
-  Simulator sim(world,world_view,1350,900);
+  Simulator sim(world, world_view, 1200, 800);
   sim.run();
 }

@@ -3,7 +3,7 @@
 Simulator::Simulator(World& world, WorldView& world_view, int screen_w,
                      int screen_h)
     : world(world), world_view(world_view) {
-  window.create(sf::VideoMode(screen_w, screen_h), "ddd");
+  window.create(sf::VideoMode(screen_w, screen_h), datam_PROG_NAME);
   window.setFramerateLimit(TARGET_FPS);
   camera_init();
 }
@@ -31,12 +31,12 @@ void Simulator::run() {
       if (event.type == sf::Event::KeyPressed) {
         switch (event.key.code) {
           case sf::Keyboard::A:
-            //print_simulation_report();
+            // print_simulation_report();
             break;
 
           case sf::Keyboard::N:
             world.next();
-            //world_view.update();
+            // world_view.update();
             break;
 
           case sf::Keyboard::R:
