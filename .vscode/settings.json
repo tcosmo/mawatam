@@ -1,4 +1,6 @@
 {
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
   "files.associations": {
     "array": "cpp",
     "atomic": "cpp",
@@ -51,6 +53,15 @@
     "ratio": "cpp",
     "iomanip": "cpp",
     "iostream": "cpp",
-    "*.in": "cpp"
+    "*.in": "cpp",
+    "bitset": "cpp",
+    "condition_variable": "cpp",
+    "csignal": "cpp",
+    "cstring": "cpp",
+    "list": "cpp",
+    "unordered_set": "cpp",
+    "mutex": "cpp",
+    "thread": "cpp",
+    "cinttypes": "cpp"
   }
 }

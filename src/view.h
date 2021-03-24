@@ -3,30 +3,52 @@
 #include <SFML/Graphics.hpp>
 
 #include "utils.h"
+#include "world.h"
 
 // Some graphic parameters
-const static size_t GRAPHIC_EDGE_THICK = 5;
-const static size_t GRAPHIC_EDGE_WIDTH = 64;
-const static size_t GRAPHIC_TILE_SIZE = GRAPHIC_EDGE_WIDTH;
-const static size_t GRAPHIC_TILE_TEXT_SIZE = GRAPHIC_EDGE_WIDTH / 2;
-const static size_t GRAPHIC_EDGE_TEXT_SIZE = GRAPHIC_EDGE_WIDTH / 3;
+const static float GRAPHIC_EDGE_THICK = 5;
+const static float GRAPHIC_EDGE_LENGTH = 64;
+const static float GRAPHIC_TILE_SIZE = GRAPHIC_EDGE_LENGTH;
+const static int GRAPHIC_TILE_TEXT_SIZE = (int)(GRAPHIC_EDGE_LENGTH / 2);
+const static int GRAPHIC_EDGE_TEXT_SIZE = (int)(GRAPHIC_EDGE_LENGTH / 3);
+
+const static sf::Color COLOR_POTENTIAL_TILE = sf::Color(0, 100, 255, 140);
+const static sf::Color COLOR_INPUT_SQUARE =
+    sf::Color(0.4 * 255, 0.4 * 255, 0.4 * 255);
 
 // Graphic layers
+const static size_t INITIAL_CAPACITY = 10;
+const static size_t CAPACITY_GROWTH_FACTOR = 2;
 const static size_t NB_GRAPHIC_LAYERS = 4;
-const static size_t LAYER_TILES = 0;
+const static size_t LAYER_POTENTIAL_TILES = 0;
+const static size_t LAYER_TILES = 1;
 const static size_t LAYER_EDGES_TEXT = 1;
 const static size_t LAYER_TILES_TEXT = 2;
 const static size_t LAYER_TILES_COLOR = 3;
-const static size_t LAYER_POTENTIAL_TILES = 4;
+
+sf::Vector2f world_pos_to_screen_pos(const sf::Vector2i& pos);
 
 class WorldView : public sf::Drawable, public sf::Transformable {
  public:
-  WorldView();
+  WorldView(const World& world);
   ~WorldView();
+
+  void update();
+
+  const World& world;
+  ViewWatcher view_watcher;
+
+  std::array<size_t, NB_GRAPHIC_LAYERS> vertex_buffers_capacity;
+  std::array<size_t, NB_GRAPHIC_LAYERS> vertex_counts;
 
  private:
   virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
+  std::vector<sf::Vertex> vertices_for_layer_and_tile(
+      size_t i_layer, const std::pair<sf::Vector2i, TileType*>& pos_and_tile);
+  void update_layer(size_t i_layer);
+  void update_vertex_buffer(size_t i_layer,
+                            const std::vector<sf::Vertex> vertices_to_add);
+
   std::array<sf::VertexBuffer, NB_GRAPHIC_LAYERS> vertex_buffers;
-  std::array<size_t, NB_GRAPHIC_LAYERS> vertex_counts;
 };

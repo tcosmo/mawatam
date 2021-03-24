@@ -17,6 +17,8 @@ class Simulator {
   static bool is_shift_pressed();
   static bool is_alt_pressed();
 
+  void print_simulation_report();
+
   World& world;
   WorldView& world_view;
 
@@ -38,4 +40,7 @@ class Simulator {
     bool drag_move_mode;
     sf::Vector2i mouse_position;
   } camera_params;
+
+  // Not efficient
+  void draw_debug_grid();
 };

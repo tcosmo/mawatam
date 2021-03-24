@@ -7,6 +7,12 @@
 #include <cstdio>
 
 #include "config.h"
+#include "easylogging++.h"
+
+#define LOGGER_PARSER "parser"
+#define LOGGER_NOT_IMPLEM "not implem"
+
+#define NOT_IMPLEM_LOG CLOG(FATAL, LOGGER_NOT_IMPLEM)
 
 struct CompareSfVector2i {
   bool operator()(const sf::Vector2<int> &a, const sf::Vector2<int> &b) const {
@@ -29,6 +35,14 @@ static const sf::Vector2f VIEW_NORTH = sf::Vector2f({0, -1});
 static const sf::Vector2f VIEW_EAST = sf::Vector2f({1, 0});
 static const sf::Vector2f VIEW_SOUTH = sf::Vector2f({0, 1});
 static const sf::Vector2f VIEW_WEST = sf::Vector2f({-1, 0});
+
+/* Printing Coordinates */
+template <typename T>
+static std::ostream &operator<<(std::ostream &os,
+                                const sf::Vector2<T> &coords) {
+  os << "(" << coords.x << "," << coords.y << ")";
+  return os;
+}
 
 /* Some geometry helpers */
 

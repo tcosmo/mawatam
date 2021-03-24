@@ -23,6 +23,10 @@ class Glue {
     if (name == other.name) return strength < other.strength;
     return name < other.name;
   }
+
+  friend std::ostream& operator<<(std::ostream& os, Glue const& m) {
+    return os << "m.name
+  }
 };
 
 // The NULL_GLUE is a default ('',0) glue which is used to specify
@@ -34,9 +38,12 @@ class TileType {
  public:
   std::string name;
   std::array<Glue, 4> glues;
+  // Set to false if the tiletype was only used to specify input
+  bool in_tileset;
 
   TileType();
-  TileType(const std::string& name, const std::array<Glue, 4>& glues);
+  TileType(const std::string& name, const std::array<Glue, 4>& glues,
+           bool in_tileset);
 };
 
 class Tileset {
@@ -49,23 +56,26 @@ class Tileset {
   Tileset(const std::vector<TileType>& tile_types);
 };
 
+// Allows the view to know what's new
+typedef std::vector<std::pair<sf::Vector2i, TileType*>> ViewWatcher;
+
 class World {
  public:
   Tileset tileset;
   std::map<sf::Vector2i, TileType*, CompareSfVector2i> tiles;
+  // Positions neighboring at least one tile
+  std::set<sf::Vector2i, CompareSfVector2i> potential_tiles_pos;
 
   World();
-  World(const Tileset& tileset,
-        const std::map<sf::Vector2i, TileType*, CompareSfVector2i>& tiles);
 
   void next();
 
   void from_file(std::string file_path);
   void from_file_content(const std::string& file_content);
 
+  void set_view_watcher(ViewWatcher* watcher);
+
  private:
-  // Positions neighboring at least one tile
-  std::set<sf::Vector2i, CompareSfVector2i> potential_tiles_pos;
   void add_neighbors_to_potential_tile_pos(const sf::Vector2i& pos);
   void init_potential_tiles_pos();
 
@@ -80,4 +90,6 @@ class World {
   // assigned those tile types are generally not in the tileset.
   // This structure keeps track of these extra tile types.
   std::vector<TileType> input_specific_tile_types;
+
+  ViewWatcher* view_watcher;
 };

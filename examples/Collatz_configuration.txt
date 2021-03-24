@@ -28,4 +28,4 @@ tile_types:
 ; (it wont be added to your tileset), it is mainly how we specify input confgurations in the datam
 input:
   0,0: null; null; null; "ter,0";
-  -1,-1: "bin,0"; null; null; null;
+  -1,-1: "bin,1"; null; null; null;

@@ -17,4 +17,15 @@
 #define VERTEX_BUFFER_MAX_SIZE 1000000
 
 // Trigger debut printing
-#define DEBUG 0
+#define DEBUG_MODE 1
+// Trigger debug information for specific part of the code
+// if the global DEBUG_MODE flag is set to 0, no debug info is shown at all
+#define DEBUG_PARSER 1
+
+#if DEBUG_MODE == 0
+#define ELPP_DISABLE_DEBUG_LOGS
+#endif
+
+#define LOGGER_CONF                                \
+  "*GLOBAL:\n FORMAT = %datetime{%Y-%M-%a %H:%M} " \
+  "%level %fbase:%line [%logger] %msg"
