@@ -12,6 +12,7 @@ const std::string KW_GLUE_ALPHA_COLOR = "glue_alphabets_color";
 const std::string KW_GLUES = "glues";
 const std::string KW_TILESET_TILE_TYPES = "tileset_tile_types";
 const std::string KW_INPUT = "input";
+const std::string KW_NULL = "null";
 
 const std::array SECTION_KW = {KW_GLUE_ALPHA_COLOR, KW_GLUES,
                                KW_TILESET_TILE_TYPES, KW_INPUT};
@@ -40,6 +41,9 @@ GlueName GlueName::parse(const std::string& repr) {
   std::smatch m;
 
   if (std::regex_search(repr, m, glue_name_regex)) {
+    if (repr == KW_NULL) {
+      throw ParseNullGlue();
+    }
     assert(m.size() >= 3);
     if (m.size() > 3)
       LOG(WARNING) << "Regex matcher gets more than 3 groups, thats weird...";
@@ -58,7 +62,13 @@ Glue Glue::parse(const std::pair<const std::string&, Yaml::Node&> key_value) {
   Glue to_return;
   try {
     to_return.name = GlueName::parse(key_value.first);
-  } catch (std::invalid_argument e) {
+  } catch (ParseNullGlue e) {
+    throw std::invalid_argument(
+        "Cannot use `null` glue name when defining tileset glues. It is "
+        "reserved for specifying null input glues.");
+  }
+
+  catch (std::invalid_argument e) {
     throw;
   }
 
@@ -123,9 +133,9 @@ void World::from_file_content(const std::string& file_content) {
   }
 
   // Section glue alphabets color
-  for (auto itN = root[KW_GLUE_ALPHA_COLOR].Begin();
-       itN != root[KW_GLUE_ALPHA_COLOR].End(); itN++) {
-    DEBUG_PARSER_LOG << (*itN).first;
-  }
+  // for (auto itN = root[KW_GLUE_ALPHA_COLOR].Begin();
+  //      itN != root[KW_GLUE_ALPHA_COLOR].End(); itN++) {
+  //   DEBUG_PARSER_LOG << (*itN).first;
+  // }
   PARSER_LOG(INFO) << "Parsing successful!";
 }

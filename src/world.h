@@ -13,14 +13,23 @@ namespace Yaml {
 class Node;
 }
 
+extern const std::string KW_NULL;
+
+struct ParseNullGlue : public std::exception {
+  const char* what() const throw() { return "The null glue was parsed"; }
+};
+
 struct GlueName {
   std::string alphabet_name;
   char name;
 
   inline static const std::string glue_name_format =
-      "([_a-zA-Z][_a-zA-Z0-9]*)\\.([a-zA-Z0-9])|null";
+      "([_a-zA-Z][_a-zA-Z0-9]*)\\.([a-zA-Z0-9])|" + KW_NULL;
 
-  GlueName() {}
+  GlueName() {
+    alphabet_name = "";
+    name = '\0';
+  }
   GlueName(const std::string& alphabet_name, char name)
       : alphabet_name(alphabet_name), name(name) {}
 
@@ -50,8 +59,10 @@ struct Glue {
   GlueName name;
   int strength;
 
-  Glue() {}
+  Glue() { strength = 0; }
   Glue(const GlueName& name, int strength) : name(name), strength(strength) {}
+
+  static Glue NULL_GLUE() { return {{"", '\0'}, 0}; }
 
   static Glue parse(const std::pair<const std::string&, Yaml::Node&> key_value);
 
@@ -65,6 +76,7 @@ struct Glue {
   }
 
   std::string __str__() const {
+    if (*this == Glue::NULL_GLUE()) return KW_NULL;
     return name.__str__() + ": " + std::to_string(strength);
   }
 
@@ -72,10 +84,6 @@ struct Glue {
     return os << m.__str__();
   }
 };
-
-// The NULL_GLUE is a default ('', '\0',0) glue which is used to specify
-// the default side of polyominos squares input
-static const Glue NULL_GLUE({{"", '\0'}, 0});
 
 struct SquareGlues {
   std::array<Glue, 4> glues;
@@ -111,7 +119,7 @@ struct TileType {
   // C++17 feature
   inline static const std::regex name_format = std::regex("[a-zA-Z0-9]");
 
-  TileType() {}
+  TileType() { name = '\0'; }
   TileType(const char& name, const SquareGlues& glues)
       : name(name), glues(glues){};
 
