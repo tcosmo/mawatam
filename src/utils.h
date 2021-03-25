@@ -9,10 +9,38 @@
 #include "config.h"
 #include "easylogging++.h"
 
+/* Logging */
+
 #define LOGGER_PARSER "parser"
-#define LOGGER_NOT_IMPLEM "not implem"
+#define LOGGER_NOT_IMPLEM "not_implem"
 
 #define NOT_IMPLEM_LOG CLOG(FATAL, LOGGER_NOT_IMPLEM)
+
+// Formatter for exceptions, credits to
+// https://stackoverflow.com/questions/12261915/how-to-throw-stdexceptions-with-variable-messages
+class Formatter {
+ public:
+  Formatter() {}
+  ~Formatter() {}
+
+  template <typename Type>
+  Formatter &operator<<(const Type &value) {
+    stream_ << value;
+    return *this;
+  }
+
+  std::string str() const { return stream_.str(); }
+  operator std::string() const { return stream_.str(); }
+
+  enum ConvertToString { to_str };
+  std::string operator>>(ConvertToString) { return stream_.str(); }
+
+ private:
+  std::stringstream stream_;
+
+  Formatter(const Formatter &);
+  Formatter &operator=(Formatter &);
+};
 
 struct CompareSfVector2i {
   bool operator()(const sf::Vector2<int> &a, const sf::Vector2<int> &b) const {

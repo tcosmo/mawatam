@@ -75,7 +75,7 @@ void Simulator::run() {
             break;
 
           case sf::Keyboard::N:
-            world.next();
+            // world.next();
             world_view.update();
             break;
 

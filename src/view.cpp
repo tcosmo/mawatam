@@ -30,9 +30,8 @@ std::vector<sf::Vertex> WorldView::vertices_for_layer_and_tile(
       break;
 
     case LAYER_TILES:
-      if (pos_and_tile.second && !pos_and_tile.second->in_tileset)
-        return get_filled_square_vertices(pos_and_tile.first,
-                                          COLOR_INPUT_SQUARE);
+
+      return get_filled_square_vertices(pos_and_tile.first, COLOR_INPUT_SQUARE);
       break;
 
     default:
@@ -62,8 +61,6 @@ void WorldView::update() {
       printf("[view] Is potential tile: %d\n",
              (int)(pos_and_tile.second == nullptr));
       if (pos_and_tile.second) {
-        printf("[view] Is tile in tileset: %d\n",
-               (int)(pos_and_tile.second->in_tileset));
       }
       printf("\n");
     }

@@ -1,0 +1,40 @@
+# Collatz tileset
+
+# The format for specifying glues is:
+# <glue_alphabet_name>.<glue_name>: <glue_strength>
+# The alphabet name must comply with [_a-zA-Z][_a-zA-Z0-9]*
+# The glue name must comply with [a-zA-Z0-9]
+# Hence, the complete glue name must match [_a-zA-Z][_a-zA-Z0-9]*\\.[a-zA-Z0-9]
+glues:
+  bin.0: 1
+  bin.1: 1
+  ter.0: 1
+  ter.1: 1
+  ter.2: 1
+
+# The format for specifying tile types is:
+# <tile_type_name>: [<glue_north_name>, <glue_east_name>, <glue_south_name>, <glue_west_name>]
+# The tile type name must comply with [a-zA-Z0-9]
+tileset_tile_types:
+  0: [bin.0, ter.0, bin.0, ter.0]
+  1: [bin.0, ter.1, bin.1, ter.0]
+  2: [bin.0, ter.2, bin.0, ter.1]
+  3: [bin.0, ter.2, bin.0, ter.1]
+  4: [bin.0, ter.2, bin.0, ter.1]
+  5: [bin.1, ter.2, bin.1, ter.2]
+
+# When you specify an input, you can either use anonymous tile types that wont be registered in the tileset:
+# <x>,<y>: [<glue_north_name>, <glue_east_name>, <glue_south_name>, <glue_west_name>]
+# Or use tile types of the tileset:
+# <x>, <y>: <tile_type_name>
+input:
+  0,0: [null, null, null, ter.0]
+  -1,-1: [bin.1, null, null, null]
+
+# You can specify the color with which the simulator will render
+# glues that use a given alphabet name:
+# <glue_alphabet_name>: #hexcolor or `auto` to let the simulator choose
+# By default it is set to auto
+glue_alphabets_color:
+  bin: auto
+  ter: auto

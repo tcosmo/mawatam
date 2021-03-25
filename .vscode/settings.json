@@ -62,6 +62,12 @@
     "unordered_set": "cpp",
     "mutex": "cpp",
     "thread": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "hash_map": "cpp",
+    "hash_set": "cpp",
+    "charconv": "cpp",
+    "forward_list": "cpp",
+    "regex": "cpp",
+    "shared_mutex": "cpp"
   }
 }

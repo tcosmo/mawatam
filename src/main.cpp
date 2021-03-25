@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
   init_logger();
 
   World world;
-  world.from_file("examples/Collatz_configuration.txt");
+  world.from_file("examples/Collatz_configuration.yml");
 
   // WorldView world_view(world);
   // world.set_view_watcher(&world_view.view_watcher);
@@ -26,4 +26,6 @@ int main(int argc, char** argv) {
 
   // Simulator sim(world, world_view, 1200, 800);
   // sim.run();
+
+  LOG(INFO) << "Goodbye, be well!";
 }
