@@ -160,7 +160,7 @@ class World {
      They are "anoymous tile types". The only constraint is that
      They use the same glues as in the tileset or a default null glue of
      strength 0. */
-  std::vector<TileType> tile_types;
+  std::vector<std::unique_ptr<TileType>> tile_types;
   std::map<sf::Vector2i, TileType*, CompareSfVector2i> tiles;
 
   // Positions neighboring at least one tile

@@ -35,8 +35,9 @@ class Parser {
   std::set<std::string> glue_alphabet_names;
   std::map<std::string, Glue> all_glues;
 
-  std::vector<TileType>
-  parse_configuration_file_world_section_tileset_tile_types(Yaml::Node& root);
+  void parse_configuration_file_world_section_tileset_tile_types(
+      Yaml::Node& root);
+  std::map<std::string, TileType> all_tile_types;
 
   World& world;
 };

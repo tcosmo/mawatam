@@ -113,6 +113,9 @@ void Parser::parse_configuration_file_world_section_glues(Yaml::Node& root) {
       Glue glue = Glue::parse((*it));
       glue_alphabet_names.insert(glue.name.alphabet_name);
       DEBUG_PARSER_LOG << "Successfully parsed glue: `" << glue << "`";
+
+      // No need to check for glue.name() unicity: yaml parser
+      // will only pick take one version of redundant keys
       all_glues[glue.name()] = std::move(glue);
     } catch (const std::invalid_argument e) {
       PARSER_LOG(FATAL) << e.what();
@@ -212,10 +215,8 @@ TileType TileType::parse(const std::pair<const std::string&, Yaml::Node&>
   return to_return;
 }
 
-std::vector<TileType>
-Parser::parse_configuration_file_world_section_tileset_tile_types(
+void Parser::parse_configuration_file_world_section_tileset_tile_types(
     Yaml::Node& root) {
-  std::vector<TileType> to_return;
   Yaml::Node node_tileset_tile_types = root[KW_TILESET_TILE_TYPES];
 
   check_section_is_map(node_tileset_tile_types, KW_TILESET_TILE_TYPES);
@@ -223,15 +224,22 @@ Parser::parse_configuration_file_world_section_tileset_tile_types(
   for (auto it = node_tileset_tile_types.Begin();
        it != node_tileset_tile_types.End(); it++) {
     try {
-      to_return.push_back(TileType::parse((*it), all_glues));
-      DEBUG_PARSER_LOG << "Successfully parsed tile type: `"
-                       << to_return[to_return.size() - 1] << "`";
+      TileType tile_type = TileType::parse((*it), all_glues);
+
+      if (all_tile_types.find(tile_type.glues.__str__()) ==
+          all_tile_types.end()) {
+        DEBUG_PARSER_LOG << "Successfully parsed tile type: `" << tile_type
+                         << "`";
+        all_tile_types[tile_type.glues.__str__()] = std::move(tile_type);
+      } else {
+        PARSER_LOG(WARNING)
+            << "Two tile types have identical glues: " << tile_type;
+      }
+
     } catch (const std::invalid_argument e) {
       PARSER_LOG(FATAL) << e.what();
     }
   }
-
-  return to_return;
 }
 
 void Parser::parse_configuration_file_world(Yaml::Node& root) {
@@ -253,8 +261,9 @@ void Parser::parse_configuration_file_world(Yaml::Node& root) {
   parse_configuration_file_world_section_glues(root);
 
   // Section `tileset_tile_types`
-  std::vector<TileType> tileset_tile_types =
-      parse_configuration_file_world_section_tileset_tile_types(root);
+  parse_configuration_file_world_section_tileset_tile_types(root);
+
+  // Section `input`
 }
 
 void Parser::parse_configuration_file(
