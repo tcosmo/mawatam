@@ -91,6 +91,11 @@ struct SquareGlues {
   SquareGlues() {}
   SquareGlues(const std::array<Glue, 4>& glues) : glues(glues) {}
 
+  static SquareGlues parse(Yaml::Node& node_square_glues,
+                           const std::map<std::string, Glue>& all_glues);
+
+  Glue& operator[](size_t index) { return glues[index]; }
+
   bool operator==(const SquareGlues& other) const {
     return glues == other.glues;
   }

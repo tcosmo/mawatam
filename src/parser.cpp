@@ -23,6 +23,12 @@ Parser::Parser(World& world) : world(world) {
   all_glues[NULL_GLUE.name()] = NULL_GLUE;
 }
 
+void check_section_is_map(Yaml::Node& section_node,
+                          const std::string& section_kw) {
+  if (!section_node.IsMap())
+    PARSER_LOG(FATAL) << "Section `" << section_kw << "` must be a map";
+}
+
 void Parser::load_configuration_file(
     const std::string& p_configuration_file_path) {
   configuration_file_path = p_configuration_file_path;
@@ -44,11 +50,11 @@ void Parser::load_configuration_file(
 }
 
 GlueName GlueName::parse(const std::string& repr) {
-  std::regex glue_name_regex = std::regex(GlueName::glue_name_format);
+  static std::regex glue_name_regex = std::regex(GlueName::glue_name_format);
   GlueName to_return;
   std::smatch m;
 
-  if (std::regex_search(repr, m, glue_name_regex)) {
+  if (std::regex_match(repr, m, glue_name_regex)) {
     if (repr == KW_NULL) {
       throw ParseNullGlue();
     }
@@ -72,8 +78,8 @@ Glue Glue::parse(const std::pair<const std::string&, Yaml::Node&> key_value) {
     to_return.name = GlueName::parse(key_value.first);
   } catch (ParseNullGlue e) {
     throw std::invalid_argument(
-        "Cannot use `null` glue name when defining tileset glues. It is "
-        "reserved for specifying null input glues.");
+        "`null` glue cannot be redefined, it is already given by the model "
+        "(strength 0)");
   }
 
   catch (std::invalid_argument e) {
@@ -97,28 +103,11 @@ Glue Glue::parse(const std::pair<const std::string&, Yaml::Node&> key_value) {
   return to_return;
 }
 
-TileType TileType::parse(const std::pair<const std::string&, Yaml::Node&>
-                             tile_type_name_and_square_glues,
-                         const std::map<std::string, Glue>& all_glues) {
-  // std::regex tile_type_name = std::regex(GlueName::glue_name_format);
-  // GlueName to_return;
-  // std::smatch m;
-
-  // if (std::regex_search(repr, m, glue_name_regex)) {
-  //   if (repr == KW_NULL) {
-  //     throw ParseNullGlue();
-  //   }
-  //   assert(m.size() >= 3);
-  //   if (m.size() > 3)
-  //     LOG(WARNING) << "Regex matcher gets more than 3 groups, thats
-  //     weird...";
-  //   to_return.alphabet_name = m[1];
-  // }
-  return TileType();
-}
-
 void Parser::parse_configuration_file_world_section_glues(Yaml::Node& root) {
   Yaml::Node node_glues = root[KW_GLUES];
+
+  check_section_is_map(node_glues, KW_GLUES);
+
   for (auto it = node_glues.Begin(); it != node_glues.End(); it++) {
     try {
       Glue glue = Glue::parse((*it));
@@ -131,11 +120,106 @@ void Parser::parse_configuration_file_world_section_glues(Yaml::Node& root) {
   }
 }
 
+std::vector<std::string> parse_python_style_lists(const std::string& repr) {
+  std::string striped_repr = strip(repr);
+  if (striped_repr.size() == 0) throw InvalidListRepr(repr);
+  if (striped_repr[0] != '[') throw InvalidListRepr(repr);
+
+  size_t pos_end = striped_repr.find(']');
+  if (pos_end == std::string::npos) throw InvalidListRepr(repr);
+  if (pos_end + 1 != striped_repr.size()) throw InvalidListRepr(repr);
+
+  striped_repr.erase(0, 1);
+  striped_repr.erase(striped_repr.size() - 1);
+
+  std::vector<std::string> to_return;
+
+  size_t pos_delim = striped_repr.find(',');
+
+  while ((pos_delim = striped_repr.find(',')) != std::string::npos) {
+    std::string token = strip(striped_repr.substr(0, pos_delim));
+    to_return.push_back(token);
+    striped_repr.erase(0, pos_delim + 1);
+  }
+
+  std::string last_token = strip(striped_repr);
+  if (last_token.size() != 0) to_return.push_back(last_token);
+
+  return to_return;
+}
+
+SquareGlues SquareGlues::parse(Yaml::Node& node_square_glues,
+                               const std::map<std::string, Glue>& all_glues) {
+  std::vector<std::string> parsed_sequence;
+
+  if (node_square_glues.IsSequence()) {
+    for (auto it = node_square_glues.Begin(); it != node_square_glues.End();
+         it++) {
+      parsed_sequence.push_back(strip((*it).second.As<std::string>()));
+    }
+  } else {
+    /* There is a bug in the yaml library: they interpret [bin.0, ter.1, bin.1,
+        ter.0] as a string and not a sequence...
+        Hence we have to do our own parsing if inline sequences are given
+    */
+    parsed_sequence =
+        parse_python_style_lists(node_square_glues.As<std::string>());
+  }
+
+  if (parsed_sequence.size() != 4) {
+    PARSER_LOG(FATAL)
+        << "The glues of a tile type must be an array with 4 components";
+  }
+
+  SquareGlues to_return;
+
+  size_t i = 0;
+  for (const std::string& glue_name : parsed_sequence) {
+    if (all_glues.find(glue_name) == all_glues.end())
+      PARSER_LOG(FATAL)
+          << "The glue " << glue_name
+          << " does not exist, make sure to register it before you use it";
+    to_return[i] = all_glues.at(glue_name);
+    i += 1;
+  }
+
+  return to_return;
+}
+
+TileType TileType::parse(const std::pair<const std::string&, Yaml::Node&>
+                             tile_type_name_and_square_glues,
+                         const std::map<std::string, Glue>& all_glues) {
+  static std::regex tile_type_name_regex =
+      std::regex(TileType::tile_type_name_format);
+  TileType to_return;
+  std::smatch m;
+
+  if (std::regex_match(tile_type_name_and_square_glues.first, m,
+                       tile_type_name_regex)) {
+    assert(m.size() == 1);
+    to_return.name = m[0].str()[0];
+  } else {
+    throw std::invalid_argument(Formatter()
+                                << "Representation `"
+                                << tile_type_name_and_square_glues.first
+                                << "` does not match glue name format: `"
+                                << TileType::tile_type_name_format + "`");
+  }
+
+  to_return.glues =
+      SquareGlues::parse(tile_type_name_and_square_glues.second, all_glues);
+
+  return to_return;
+}
+
 std::vector<TileType>
 Parser::parse_configuration_file_world_section_tileset_tile_types(
     Yaml::Node& root) {
   std::vector<TileType> to_return;
-  Yaml::Node node_tileset_tile_types = root[KW_GLUES];
+  Yaml::Node node_tileset_tile_types = root[KW_TILESET_TILE_TYPES];
+
+  check_section_is_map(node_tileset_tile_types, KW_TILESET_TILE_TYPES);
+
   for (auto it = node_tileset_tile_types.Begin();
        it != node_tileset_tile_types.End(); it++) {
     try {
@@ -169,8 +253,8 @@ void Parser::parse_configuration_file_world(Yaml::Node& root) {
   parse_configuration_file_world_section_glues(root);
 
   // Section `tileset_tile_types`
-  // std::vector<TileType> tileset_tile_types =
-  //     parse_configuration_file_world_section_tileset_tile_types(root);
+  std::vector<TileType> tileset_tile_types =
+      parse_configuration_file_world_section_tileset_tile_types(root);
 }
 
 void Parser::parse_configuration_file(

@@ -6,6 +6,17 @@ struct ParseNullGlue : public std::exception {
   const char* what() const throw() { return "The null glue was parsed"; }
 };
 
+struct InvalidListRepr : public std::exception {
+ private:
+  std::string msg;
+
+ public:
+  explicit InvalidListRepr(const std::string& repr)
+      : msg(std::string("List representation " + repr + " is not valid")) {}
+
+  const char* what() const noexcept override { return msg.c_str(); }
+};
+
 class Parser {
  public:
   Parser(World& world);

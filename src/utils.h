@@ -49,6 +49,14 @@ struct CompareSfVector2i {
   }
 };
 
+static std::string strip(const std::string &inpt) {
+  auto start_it = inpt.begin();
+  auto end_it = inpt.rbegin();
+  while (std::isspace(*start_it)) ++start_it;
+  while (std::isspace(*end_it)) ++end_it;
+  return std::string(start_it, end_it.base());
+}
+
 // model
 static const sf::Vector2i NORTH = sf::Vector2i{0, 1};
 static const sf::Vector2i EAST = sf::Vector2i{-1, 0};

@@ -26,6 +26,7 @@
 #define ELPP_DISABLE_DEBUG_LOGS
 #endif
 
-#define LOGGER_CONF                                \
-  "*GLOBAL:\n FORMAT = %datetime{%Y-%M-%a %H:%M} " \
+// Add %datetime{%Y-%M-%a %H:%M} if you want the date
+#define LOGGER_CONF      \
+  "*GLOBAL:\n FORMAT = " \
   "%level %fbase:%line [%logger] %msg"
