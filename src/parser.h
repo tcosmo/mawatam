@@ -38,6 +38,9 @@ class Parser {
   void parse_configuration_file_world_section_tileset_tile_types(
       Yaml::Node& root);
   std::map<std::string, TileType> all_tile_types;
+  std::map<char, std::string> all_tile_types_name;
+
+  void parse_configuration_file_world_section_input(Yaml::Node& root);
 
   World& world;
 };

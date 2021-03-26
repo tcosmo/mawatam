@@ -189,7 +189,7 @@ SquareGlues SquareGlues::parse(Yaml::Node& node_square_glues,
   return to_return;
 }
 
-TileType TileType::parse(const std::pair<const std::string&, Yaml::Node&>
+TileType TileType::parse(const std::pair<const std::string&, Yaml::Node&>&
                              tile_type_name_and_square_glues,
                          const std::map<std::string, Glue>& all_glues) {
   static std::regex tile_type_name_regex =
@@ -215,6 +215,14 @@ TileType TileType::parse(const std::pair<const std::string&, Yaml::Node&>
   return to_return;
 }
 
+TileType TileType::parse(Yaml::Node& node_square_glues,
+                         const std::map<std::string, Glue>& all_glues) {
+  TileType to_return;
+  to_return.glues = SquareGlues::parse(node_square_glues, all_glues);
+
+  return to_return;
+}
+
 void Parser::parse_configuration_file_world_section_tileset_tile_types(
     Yaml::Node& root) {
   Yaml::Node node_tileset_tile_types = root[KW_TILESET_TILE_TYPES];
@@ -230,6 +238,7 @@ void Parser::parse_configuration_file_world_section_tileset_tile_types(
           all_tile_types.end()) {
         DEBUG_PARSER_LOG << "Successfully parsed tile type: `" << tile_type
                          << "`";
+        all_tile_types_name[tile_type.name] = tile_type.glues.__str__();
         all_tile_types[tile_type.glues.__str__()] = std::move(tile_type);
       } else {
         PARSER_LOG(WARNING)
@@ -239,6 +248,82 @@ void Parser::parse_configuration_file_world_section_tileset_tile_types(
     } catch (const std::invalid_argument e) {
       PARSER_LOG(FATAL) << e.what();
     }
+  }
+}
+
+sf::Vector2i parse_coordinates(const std::string& repr) {
+  std::regex coordinates_regex("( *-* *[0-9]+) *,( *-* *[0-9]+ *)");
+  std::smatch m;
+  sf::Vector2i to_ret;
+  if (std::regex_match(repr, m, coordinates_regex)) {
+    assert(m.size() == 3);
+    try {
+      to_ret.x = std::stoi(m[1]);
+      to_ret.y = std::stoi(m[2]);
+    } catch (std::invalid_argument e) {
+      throw std::invalid_argument(Formatter()
+                                  << "Invalid coordinates representation: "
+                                  << repr << " " << e.what());
+    }
+  } else {
+    throw std::invalid_argument(
+        Formatter() << "Invalid coordinates representation: " << repr);
+  }
+  return to_ret;
+}
+
+void Parser::parse_configuration_file_world_section_input(Yaml::Node& root) {
+  Yaml::Node node_tileset_tile_types = root[KW_INPUT];
+  check_section_is_map(node_tileset_tile_types, KW_INPUT);
+
+  // Maps coordinates to string tile type repr
+  std::map<sf::Vector2i, std::string, CompareSfVector2i> tmp_tile_map_repr;
+
+  for (auto it = node_tileset_tile_types.Begin();
+       it != node_tileset_tile_types.End(); it++) {
+    try {
+      sf::Vector2i coordinates = parse_coordinates((*it).first);
+      TileType tile_type;
+      if ((*it).second.As<std::string>().size() == 1) {
+        char tile_name = (*it).second.As<std::string>()[0];
+        if (all_tile_types_name.find(tile_name) == all_tile_types_name.end()) {
+          PARSER_LOG(FATAL) << "Tileset tile type with name`" << tile_name
+                            << "` does not exist";
+        }
+        tile_type = all_tile_types[all_tile_types_name[tile_name]];
+      } else {
+        tile_type = TileType::parse((*it).second, all_glues);
+      }
+
+      all_tile_types[tile_type.glues.__str__()] = tile_type;
+      tmp_tile_map_repr[coordinates] = tile_type.glues.__str__();
+
+      DEBUG_PARSER_LOG << "Successfully parsed input tile: " << coordinates
+                       << " " << tile_type;
+
+    } catch (std::invalid_argument e) {
+      PARSER_LOG(FATAL) << e.what();
+    }
+  }
+
+  /* Converting the tile map from pointing to tile types repr to the actual tile
+   * type and filling the world initial configuation. */
+
+  world.tile_types.clear();
+  std::map<std::string, size_t> tile_types_to_their_unique_ptr_loc;
+  size_t i = 0;
+  for (const auto& name_and_tile_type : all_tile_types) {
+    world.tile_types.push_back(
+        std::make_unique<TileType>(name_and_tile_type.second));
+    tile_types_to_their_unique_ptr_loc[name_and_tile_type.first] = i;
+    i += 1;
+  }
+
+  world.tiles.clear();
+  for (const auto& coord_and_tile_type_repr : tmp_tile_map_repr) {
+    size_t loc =
+        tile_types_to_their_unique_ptr_loc[coord_and_tile_type_repr.second];
+    world.tiles[coord_and_tile_type_repr.first] = world.tile_types[loc].get();
   }
 }
 
@@ -264,6 +349,7 @@ void Parser::parse_configuration_file_world(Yaml::Node& root) {
   parse_configuration_file_world_section_tileset_tile_types(root);
 
   // Section `input`
+  parse_configuration_file_world_section_input(root);
 }
 
 void Parser::parse_configuration_file(

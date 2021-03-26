@@ -128,7 +128,12 @@ struct TileType {
   TileType(const char& name, const SquareGlues& glues)
       : name(name), glues(glues){};
 
-  static TileType parse(const std::pair<const std::string&, Yaml::Node&>
+  // Anonymous tile type
+  static TileType parse(Yaml::Node& node_square_glues,
+                        const std::map<std::string, Glue>& all_glues);
+
+  // Named tile type
+  static TileType parse(const std::pair<const std::string&, Yaml::Node&>&
                             tile_type_name_and_square_glues,
                         const std::map<std::string, Glue>& all_glues);
 
@@ -159,7 +164,13 @@ class World {
      Some are only used to specify the input configuration
      They are "anoymous tile types". The only constraint is that
      They use the same glues as in the tileset or a default null glue of
-     strength 0. */
+     strength 0.
+
+     Technical, C++ matter:
+      We use unique_ptr as a wrapper to the original objects because,
+      since we are pointing to it in the `tiles` structure raw data
+      pointers would become obsolete each time the vector reallocates.
+  */
   std::vector<std::unique_ptr<TileType>> tile_types;
   std::map<sf::Vector2i, TileType*, CompareSfVector2i> tiles;
 

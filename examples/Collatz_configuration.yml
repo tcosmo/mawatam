@@ -30,7 +30,7 @@ tileset_tile_types:
 input:
   0,0: [null, null, null, ter.0]
   -1,-1: [bin.1, null, null, null]
-  1,1: "1"
+  1,1: "5"
 
 # You can specify the color with which the simulator will render
 # glues that use a given alphabet name:
