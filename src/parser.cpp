@@ -13,10 +13,11 @@ const std::string KW_GLUE_ALPHA_COLOR = "glue_alphabets_color";
 const std::string KW_GLUES = "glues";
 const std::string KW_TILESET_TILE_TYPES = "tileset_tile_types";
 const std::string KW_INPUT = "input";
+const std::string KW_TEMPERATURE = "temperature";
 const std::string KW_NULL = "null";
 
 const std::array SECTION_KW = {KW_GLUE_ALPHA_COLOR, KW_GLUES,
-                               KW_TILESET_TILE_TYPES, KW_INPUT};
+                               KW_TILESET_TILE_TYPES, KW_INPUT, KW_TEMPERATURE};
 
 Parser::Parser(World& world) : world(world) {
   // Register the null glue as a glue
@@ -308,32 +309,31 @@ void Parser::parse_configuration_file_world_section_input(Yaml::Node& root) {
 
   /* Converting the tile map from pointing to tile types repr to the actual tile
    * type and filling the world initial configuation. */
+  std::vector<std::unique_ptr<TileType>> tile_types;
+  std::map<sf::Vector2i, TileType*, CompareSfVector2i> tiles;
 
-  world.tile_types.clear();
-  world.tile_types_in_tileset.clear();
   std::map<std::string, size_t> tile_types_to_their_unique_ptr_loc;
   size_t i = 0;
   for (const auto& name_and_tile_type : all_tile_types) {
-    world.tile_types.push_back(
-        std::make_unique<TileType>(name_and_tile_type.second));
+    tile_types.push_back(std::make_unique<TileType>(name_and_tile_type.second));
 
-    if (!name_and_tile_type.second.is_anonymous()) {
+    if (!name_and_tile_type.second.is_anonymous())
       DEBUG_PARSER_LOG << "Tile type " << name_and_tile_type.second.__str__()
                        << " belongs to the tileset";
-      world.tile_types_in_tileset.push_back(
-          world.tile_types[world.tile_types.size() - 1].get());
-    }
 
     tile_types_to_their_unique_ptr_loc[name_and_tile_type.first] = i;
     i += 1;
   }
 
-  world.tiles.clear();
   for (const auto& coord_and_tile_type_repr : tmp_tile_map_repr) {
     size_t loc =
         tile_types_to_their_unique_ptr_loc[coord_and_tile_type_repr.second];
-    world.tiles[coord_and_tile_type_repr.first] = world.tile_types[loc].get();
+    tiles[coord_and_tile_type_repr.first] = tile_types[loc].get();
   }
+
+  int temperature = root[KW_TEMPERATURE].As<int>(2);
+  PARSER_LOG(INFO) << "Growing at temperature " << temperature;
+  world = World(tile_types, tiles, temperature);
 }
 
 void Parser::parse_configuration_file_world(Yaml::Node& root) {

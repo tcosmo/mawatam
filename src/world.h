@@ -162,6 +162,28 @@ typedef std::vector<std::pair<sf::Vector2i, TileType*>> ViewWatcher;
 
 class World {
  public:
+  World();
+  World(std::vector<std::unique_ptr<TileType>>& tile_types,
+        std::map<sf::Vector2i, TileType*, CompareSfVector2i>& tiles,
+        int temperature);
+
+  const std::map<sf::Vector2i, TileType*, CompareSfVector2i>& get_tiles()
+      const {
+    return tiles;
+  }
+  const std::set<sf::Vector2i, CompareSfVector2i>& get_potential_tiles_pos()
+      const {
+    return potential_tiles_pos;
+  }
+
+  // void next();
+
+  // std::vector<TileType*> tileset_query(
+  //    std::vector<std::pair<size_t, Glue>> constraints);
+
+  void set_view_watcher(ViewWatcher* watcher);
+
+ private:
   /* In the datam, not all tile types belong to the tileset
      Some are only used to specify the input configuration
      They are "anoymous tile types". The only constraint is that
@@ -182,19 +204,11 @@ class World {
   // Our 2D map of tiles
   std::map<sf::Vector2i, TileType*, CompareSfVector2i> tiles;
 
+  int temperature;
+
   // Positions neighboring at least one tile
   std::set<sf::Vector2i, CompareSfVector2i> potential_tiles_pos;
 
-  World();
-
-  // void next();
-
-  // std::vector<TileType*> tileset_query(
-  //    std::vector<std::pair<size_t, Glue>> constraints);
-
-  void set_view_watcher(ViewWatcher* watcher);
-
- private:
   void add_neighbors_to_potential_tile_pos(const sf::Vector2i& pos);
   void init_potential_tiles_pos();
 

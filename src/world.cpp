@@ -17,6 +17,21 @@
 
 World::World() { view_watcher = nullptr; }
 
+World::World(std::vector<std::unique_ptr<TileType>>& tile_types,
+             std::map<sf::Vector2i, TileType*, CompareSfVector2i>& tiles,
+             int temperature)
+    : tile_types(std::move(tile_types)),
+      tiles(std::move(tiles)),
+      temperature(temperature) {
+  view_watcher = nullptr;
+
+  for (const auto& tile_ptr : tile_types) {
+    if (!tile_ptr.get()->is_anonymous()) {
+      tile_types_in_tileset.push_back(tile_ptr.get());
+    }
+  }
+}
+
 void World::set_view_watcher(ViewWatcher* watcher) {
   view_watcher = watcher;
 

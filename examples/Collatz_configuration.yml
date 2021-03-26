@@ -12,6 +12,8 @@ glues:
   ter.1: 1
   ter.2: 1
 
+temperature: 2
+
 # The format for specifying tile types is:
 # <tile_type_name>: [<glue_north_name>, <glue_east_name>, <glue_south_name>, <glue_west_name>]
 # The tile type name must comply with [a-zA-Z0-9]
