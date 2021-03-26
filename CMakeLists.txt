@@ -19,7 +19,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories("${PROJECT_BINARY_DIR}")
 
-file(GLOB SOURCES "src/*.cpp" "src/yaml/*.cpp" )
+file(GLOB SOURCES "src/*.cpp" "src/yaml/*.cpp" "src/easylogging++/*.cpp" )
 
 set(EXECUTABLE_NAME "datam")
 add_executable(datam ${SOURCES})

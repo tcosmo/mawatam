@@ -1,7 +1,8 @@
+#include "parser.h"
+
 #include <filesystem>
 #include <fstream>
 
-#include "world.h"
 #include "yaml/Yaml.hpp"
 
 #define DEBUG_PARSER_LOG CLOG_IF(DEBUG_PARSER, DEBUG, "parser")
@@ -17,12 +18,19 @@ const std::string KW_NULL = "null";
 const std::array SECTION_KW = {KW_GLUE_ALPHA_COLOR, KW_GLUES,
                                KW_TILESET_TILE_TYPES, KW_INPUT};
 
-void World::from_file(std::string file_path) {
-  std::ifstream ifs(file_path);
+Parser::Parser(World& world) : world(world) {
+  // Register the null glue as a glue
+  all_glues[NULL_GLUE.name()] = NULL_GLUE;
+}
+
+void Parser::load_configuration_file(
+    const std::string& p_configuration_file_path) {
+  configuration_file_path = p_configuration_file_path;
+  std::ifstream ifs(configuration_file_path);
 
   if (!ifs) {
     PARSER_LOG(FATAL)
-        << "File " << file_path
+        << "File " << configuration_file_path
         << " was not found. Current working directory is: `"
         << std::filesystem::current_path() << "`. "
         << "You might want to move or make a symbolic link of the file "
@@ -31,8 +39,8 @@ void World::from_file(std::string file_path) {
   std::string content((std::istreambuf_iterator<char>(ifs)),
                       (std::istreambuf_iterator<char>()));
 
-  PARSER_LOG(INFO) << "Input file: " << file_path;
-  from_file_content(content);
+  PARSER_LOG(INFO) << "Input file: " << configuration_file_path;
+  parse_configuration_file(content);
 }
 
 GlueName GlueName::parse(const std::string& repr) {
@@ -48,7 +56,7 @@ GlueName GlueName::parse(const std::string& repr) {
     if (m.size() > 3)
       LOG(WARNING) << "Regex matcher gets more than 3 groups, thats weird...";
     to_return.alphabet_name = m[1].str();
-    to_return.name = m[2].str()[0];
+    to_return._char = m[2].str()[0];
   } else {
     throw std::invalid_argument(Formatter()
                                 << "Representation `" << repr
@@ -86,22 +94,63 @@ Glue Glue::parse(const std::pair<const std::string&, Yaml::Node&> key_value) {
                     << strength_string << "` because of: " << e.what());
   }
 
-  DEBUG_PARSER_LOG << "Successfully parsed glue: `" << to_return << "`";
+  return to_return;
+}
+
+TileType TileType::parse(const std::pair<const std::string&, Yaml::Node&>
+                             tile_type_name_and_square_glues,
+                         const std::map<std::string, Glue>& all_glues) {
+  // std::regex tile_type_name = std::regex(GlueName::glue_name_format);
+  // GlueName to_return;
+  // std::smatch m;
+
+  // if (std::regex_search(repr, m, glue_name_regex)) {
+  //   if (repr == KW_NULL) {
+  //     throw ParseNullGlue();
+  //   }
+  //   assert(m.size() >= 3);
+  //   if (m.size() > 3)
+  //     LOG(WARNING) << "Regex matcher gets more than 3 groups, thats
+  //     weird...";
+  //   to_return.alphabet_name = m[1];
+  // }
+  return TileType();
+}
+
+void Parser::parse_configuration_file_world_section_glues(Yaml::Node& root) {
+  Yaml::Node node_glues = root[KW_GLUES];
+  for (auto it = node_glues.Begin(); it != node_glues.End(); it++) {
+    try {
+      Glue glue = Glue::parse((*it));
+      glue_alphabet_names.insert(glue.name.alphabet_name);
+      DEBUG_PARSER_LOG << "Successfully parsed glue: `" << glue << "`";
+      all_glues[glue.name()] = std::move(glue);
+    } catch (const std::invalid_argument e) {
+      PARSER_LOG(FATAL) << e.what();
+    }
+  }
+}
+
+std::vector<TileType>
+Parser::parse_configuration_file_world_section_tileset_tile_types(
+    Yaml::Node& root) {
+  std::vector<TileType> to_return;
+  Yaml::Node node_tileset_tile_types = root[KW_GLUES];
+  for (auto it = node_tileset_tile_types.Begin();
+       it != node_tileset_tile_types.End(); it++) {
+    try {
+      to_return.push_back(TileType::parse((*it), all_glues));
+      DEBUG_PARSER_LOG << "Successfully parsed tile type: `"
+                       << to_return[to_return.size() - 1] << "`";
+    } catch (const std::invalid_argument e) {
+      PARSER_LOG(FATAL) << e.what();
+    }
+  }
 
   return to_return;
 }
 
-void World::from_file_content(const std::string& file_content) {
-  PARSER_LOG(INFO) << "Parsing...";
-
-  Yaml::Node root;
-
-  try {
-    Yaml::Parse(root, file_content);
-  } catch (const Yaml::Exception e) {
-    PARSER_LOG(FATAL) << "Exception " << e.Type() << ": " << e.what();
-  }
-
+void Parser::parse_configuration_file_world(Yaml::Node& root) {
   // Checking that all sections are here
   for (const std::string& kw : SECTION_KW) {
     if (root[kw].IsNone()) {
@@ -116,21 +165,28 @@ void World::from_file_content(const std::string& file_content) {
     }
   }
 
-  // Section glues
-  std::set<std::string> all_glue_alphabet_names;
-  std::set<std::string> all_glue_names;
-  std::map<std::string, Glue> all_glues;
+  // Section `glues`
+  parse_configuration_file_world_section_glues(root);
 
-  Yaml::Node node_glues = root[KW_GLUES];
-  for (auto it = node_glues.Begin(); it != node_glues.End(); it++) {
-    Glue glue;
+  // Section `tileset_tile_types`
+  // std::vector<TileType> tileset_tile_types =
+  //     parse_configuration_file_world_section_tileset_tile_types(root);
+}
 
-    try {
-      glue = Glue::parse((*it));
-    } catch (const std::invalid_argument e) {
-      PARSER_LOG(FATAL) << e.what();
-    }
+void Parser::parse_configuration_file(
+    const std::string& p_configuration_file_content) {
+  configuration_file_content = p_configuration_file_content;
+  PARSER_LOG(INFO) << "Parsing...";
+
+  Yaml::Node root;
+
+  try {
+    Yaml::Parse(root, configuration_file_content);
+  } catch (const Yaml::Exception e) {
+    PARSER_LOG(FATAL) << "Exception " << e.Type() << ": " << e.what();
   }
+
+  parse_configuration_file_world(root);
 
   // Section glue alphabets color
   // for (auto itN = root[KW_GLUE_ALPHA_COLOR].Begin();

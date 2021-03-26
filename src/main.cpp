@@ -1,5 +1,5 @@
 
-#include "world.h"
+#include "parser.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -18,7 +18,9 @@ int main(int argc, char** argv) {
   init_logger();
 
   World world;
-  world.from_file("examples/Collatz_configuration.yml");
+
+  Parser parser(world);
+  parser.load_configuration_file("examples/Collatz_configuration.yml");
 
   // WorldView world_view(world);
   // world.set_view_watcher(&world_view.view_watcher);

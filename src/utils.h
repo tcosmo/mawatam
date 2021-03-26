@@ -7,7 +7,7 @@
 #include <cstdio>
 
 #include "config.h"
-#include "easylogging++.h"
+#include "easylogging++/easylogging++.h"
 
 /* Logging */
 

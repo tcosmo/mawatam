@@ -14,38 +14,39 @@ class Node;
 }
 
 extern const std::string KW_NULL;
-
-struct ParseNullGlue : public std::exception {
-  const char* what() const throw() { return "The null glue was parsed"; }
-};
+static const char NULL_GLUE_ALPHA_NAME[] = "";
+static const char NULL_GLUE_CHAR = '\0';
 
 struct GlueName {
   std::string alphabet_name;
-  char name;
+  char _char;
 
   inline static const std::string glue_name_format =
       "([_a-zA-Z][_a-zA-Z0-9]*)\\.([a-zA-Z0-9])|" + KW_NULL;
 
   GlueName() {
-    alphabet_name = "";
-    name = '\0';
+    alphabet_name = NULL_GLUE_ALPHA_NAME;
+    _char = NULL_GLUE_CHAR;
   }
-  GlueName(const std::string& alphabet_name, char name)
-      : alphabet_name(alphabet_name), name(name) {}
+  GlueName(const std::string& alphabet_name, char _char)
+      : alphabet_name(alphabet_name), _char(_char) {}
 
   static GlueName parse(const std::string& repr);
 
   std::string __str__() const {
-    return alphabet_name + "." + std::string(1, name);
+    if (alphabet_name.size() == 0 && _char == '\0') return KW_NULL;
+    return alphabet_name + "." + std::string(1, _char);
   }
 
+  std::string operator()() const { return __str__(); }
+
   bool operator==(const GlueName& other) const {
-    return alphabet_name == other.alphabet_name && name == other.name;
+    return alphabet_name == other.alphabet_name && _char == other._char;
   }
 
   bool operator<(const GlueName& other) const {
-    if (name == other.name) return alphabet_name < other.alphabet_name;
-    return name < other.name;
+    if (_char == other._char) return alphabet_name < other.alphabet_name;
+    return _char < other._char;
   }
 
   friend std::ostream& operator<<(std::ostream& os, const GlueName& m) {
@@ -62,8 +63,6 @@ struct Glue {
   Glue() { strength = 0; }
   Glue(const GlueName& name, int strength) : name(name), strength(strength) {}
 
-  static Glue NULL_GLUE() { return {{"", '\0'}, 0}; }
-
   static Glue parse(const std::pair<const std::string&, Yaml::Node&> key_value);
 
   bool operator==(const Glue& other) const {
@@ -76,7 +75,6 @@ struct Glue {
   }
 
   std::string __str__() const {
-    if (*this == Glue::NULL_GLUE()) return KW_NULL;
     return name.__str__() + ": " + std::to_string(strength);
   }
 
@@ -84,6 +82,8 @@ struct Glue {
     return os << m.__str__();
   }
 };
+
+static const Glue NULL_GLUE = Glue({{NULL_GLUE_ALPHA_NAME, NULL_GLUE_CHAR}, 0});
 
 struct SquareGlues {
   std::array<Glue, 4> glues;
@@ -117,11 +117,15 @@ struct TileType {
   SquareGlues glues;
 
   // C++17 feature
-  inline static const std::regex name_format = std::regex("[a-zA-Z0-9]");
+  inline static const std::string tile_type_name_format = "[a-zA-Z0-9]";
 
   TileType() { name = '\0'; }
   TileType(const char& name, const SquareGlues& glues)
       : name(name), glues(glues){};
+
+  static TileType parse(const std::pair<const std::string&, Yaml::Node&>
+                            tile_type_name_and_square_glues,
+                        const std::map<std::string, Glue>& all_glues);
 
   bool operator==(const TileType& other) const {
     return name == other.name && glues == other.glues;
@@ -154,17 +158,12 @@ class World {
   std::vector<TileType> tile_types;
   std::map<sf::Vector2i, TileType*, CompareSfVector2i> tiles;
 
-  std::map<std::string, sf::Color> custom_glue_alphabets_colors;
-
   // Positions neighboring at least one tile
   std::set<sf::Vector2i, CompareSfVector2i> potential_tiles_pos;
 
   World();
 
   // void next();
-
-  void from_file(std::string file_path);
-  void from_file_content(const std::string& file_content);
 
   // std::vector<TileType*> tileset_query(
   //    std::vector<std::pair<size_t, Glue>> constraints);
