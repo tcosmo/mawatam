@@ -128,6 +128,8 @@ struct TileType {
   TileType(const char& name, const SquareGlues& glues)
       : name(name), glues(glues){};
 
+  bool is_anonymous() const { return name == '\0'; }
+
   // Anonymous tile type
   static TileType parse(Yaml::Node& node_square_glues,
                         const std::map<std::string, Glue>& all_glues);
@@ -172,6 +174,12 @@ class World {
       pointers would become obsolete each time the vector reallocates.
   */
   std::vector<std::unique_ptr<TileType>> tile_types;
+
+  // Pointers to the tile types that are actually part of our tileset (i.e. non
+  // anonymous tile types)
+  std::vector<TileType*> tile_types_in_tileset;
+
+  // Our 2D map of tiles
   std::map<sf::Vector2i, TileType*, CompareSfVector2i> tiles;
 
   // Positions neighboring at least one tile
@@ -197,6 +205,4 @@ class World {
       const sf::Vector2i& pos);
 
   ViewWatcher* view_watcher;
-
-  std::vector<TileType*> tile_types_in_tileset;
 };
