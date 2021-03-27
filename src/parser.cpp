@@ -5,19 +5,20 @@
 
 #include "yaml/Yaml.hpp"
 
-#define DEBUG_PARSER_LOG CLOG_IF(DEBUG_PARSER, DEBUG, "parser")
-#define PARSER_LOG(LVL) CLOG(LVL, "parser")
+#define DEBUG_PARSER_LOG CLOG_IF(DEBUG_PARSER, DEBUG, LOGGER_PARSER)
+#define PARSER_LOG(LVL) CLOG(LVL, LOGGER_PARSER)
 
 /* Our format keywords */
 const std::string KW_GLUE_ALPHA_COLOR = "glue_alphabets_color";
 const std::string KW_GLUES = "glues";
 const std::string KW_TILESET_TILE_TYPES = "tileset_tile_types";
-const std::string KW_INPUT = "input";
+const std::string KW_CONFIGURATION = "configuration";
 const std::string KW_TEMPERATURE = "temperature";
 const std::string KW_NULL = "null";
 
 const std::array SECTION_KW = {KW_GLUE_ALPHA_COLOR, KW_GLUES,
-                               KW_TILESET_TILE_TYPES, KW_INPUT, KW_TEMPERATURE};
+                               KW_TILESET_TILE_TYPES, KW_CONFIGURATION,
+                               KW_TEMPERATURE};
 
 Parser::Parser(World& world) : world(world) {
   // Register the null glue as a glue
@@ -273,9 +274,10 @@ sf::Vector2i parse_coordinates(const std::string& repr) {
   return to_ret;
 }
 
-void Parser::parse_configuration_file_world_section_input(Yaml::Node& root) {
-  Yaml::Node node_tileset_tile_types = root[KW_INPUT];
-  check_section_is_map(node_tileset_tile_types, KW_INPUT);
+void Parser::parse_configuration_file_world_section_configuration(
+    Yaml::Node& root) {
+  Yaml::Node node_tileset_tile_types = root[KW_CONFIGURATION];
+  check_section_is_map(node_tileset_tile_types, KW_CONFIGURATION);
 
   // Maps coordinates to string tile type repr
   std::map<sf::Vector2i, std::string, CompareSfVector2i> tmp_tile_map_repr;
@@ -299,8 +301,8 @@ void Parser::parse_configuration_file_world_section_input(Yaml::Node& root) {
       all_tile_types[tile_type.glues.__str__()] = tile_type;
       tmp_tile_map_repr[coordinates] = tile_type.glues.__str__();
 
-      DEBUG_PARSER_LOG << "Successfully parsed input tile: " << coordinates
-                       << " " << tile_type;
+      DEBUG_PARSER_LOG << "Successfully parsed configuration tile: "
+                       << coordinates << " " << tile_type;
 
     } catch (std::invalid_argument e) {
       PARSER_LOG(FATAL) << e.what();
@@ -341,9 +343,9 @@ void Parser::parse_configuration_file_world(Yaml::Node& root) {
   for (const std::string& kw : SECTION_KW) {
     if (root[kw].IsNone()) {
       if (kw == KW_GLUE_ALPHA_COLOR) continue;
-      if (kw == KW_INPUT) {
-        PARSER_LOG(WARNING)
-            << "No input was given, add an `input` section to your input file";
+      if (kw == KW_CONFIGURATION) {
+        PARSER_LOG(WARNING) << "No configuration was set, add a "
+                               "`configuration` section to your input file";
       } else {
         PARSER_LOG(FATAL) << "Mandatory section `" << kw
                           << "` is missing from input file";
@@ -357,8 +359,8 @@ void Parser::parse_configuration_file_world(Yaml::Node& root) {
   // Section `tileset_tile_types`
   parse_configuration_file_world_section_tileset_tile_types(root);
 
-  // Section `input`
-  parse_configuration_file_world_section_input(root);
+  // Section `configuration`
+  parse_configuration_file_world_section_configuration(root);
 }
 
 void Parser::parse_configuration_file(

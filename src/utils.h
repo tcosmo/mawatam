@@ -13,6 +13,7 @@
 
 #define LOGGER_PARSER "parser"
 #define LOGGER_NOT_IMPLEM "not_implem"
+#define LOGGER_VIEW "view"
 
 #define NOT_IMPLEM_LOG CLOG(FATAL, LOGGER_NOT_IMPLEM)
 

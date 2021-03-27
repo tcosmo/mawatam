@@ -25,14 +25,13 @@ tileset_tile_types:
   4: [bin.1, ter.1, bin.0, ter.2]
   5: [bin.1, ter.2, bin.1, ter.2]
 
-# When you specify an input, you can either use anonymous tile types that wont be registered in the tileset:
+# When you specify a configuration, you can either use anonymous tile types that wont be registered in the tileset:
 # <x>,<y>: [<glue_north_name>, <glue_east_name>, <glue_south_name>, <glue_west_name>]
 # Or use tile types of the tileset:
 # <x>, <y>: <tile_type_name>
-input:
-  0,0: [null, null, null, ter.0]
-  -1,-1: [bin.1, null, null, null]
-  1,1: "5"
+configuration:
+  0,0: [bin.0, null, null, null]
+  1,1: [null, null, null, ter.1]
 
 # You can specify the color with which the simulator will render
 # glues that use a given alphabet name:

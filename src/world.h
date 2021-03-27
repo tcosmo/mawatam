@@ -149,7 +149,10 @@ struct TileType {
   }
 
   std::string __str__() const {
-    return std::string(1, name) + ": " + glues.__str__();
+    if (is_anonymous())
+      return glues.__str__();
+    else
+      return std::string(1, name) + ": " + glues.__str__();
   }
 
   friend std::ostream& operator<<(std::ostream& os, TileType const& m) {

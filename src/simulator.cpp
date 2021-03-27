@@ -27,16 +27,15 @@ bool Simulator::is_alt_pressed() {
 void Simulator::print_simulation_report() {
   printf("=== Simulation Report ===\n");
   printf("\n   == Tiles ==\n");
-  printf("      - Tiles (including input squares): %zu\n",
-         world.get_tiles().size());
+  printf("      - Tiles: %zu\n", world.get_tiles().size());
   printf("      - Potential tiles: %zu\n",
          world.get_potential_tiles_pos().size());
   printf("\n   == Vertex Buffers ==\n");
 
   for (size_t i_layer = 0; i_layer < NB_GRAPHIC_LAYERS; i_layer += 1) {
     printf("      - Layer %zu:  %zu/%zu\n", i_layer,
-           world_view.vertex_counts[i_layer],
-           world_view.vertex_buffers_capacity[i_layer]);
+           world_view.get_vertex_counts()[i_layer],
+           world_view.get_vertex_buffers_capacity()[i_layer]);
   }
 }
 

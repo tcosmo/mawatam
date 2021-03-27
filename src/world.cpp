@@ -30,6 +30,8 @@ World::World(std::vector<std::unique_ptr<TileType>>& tile_types,
       tile_types_in_tileset.push_back(tile_ptr.get());
     }
   }
+
+  init_potential_tiles_pos();
 }
 
 void World::set_view_watcher(ViewWatcher* watcher) {
@@ -44,11 +46,11 @@ void World::set_view_watcher(ViewWatcher* watcher) {
   }
 }
 
-// void World::init_potential_tiles_pos() {
-//   for (const auto& pos_and_square : tiles) {
-//     add_neighbors_to_potential_tile_pos(pos_and_square.first);
-//   }
-// }
+void World::init_potential_tiles_pos() {
+  for (const auto& pos_and_square : tiles) {
+    add_neighbors_to_potential_tile_pos(pos_and_square.first);
+  }
+}
 
 // std::vector<std::pair<size_t, Glue>>
 // World::get_glues_surrounding_potential_tile_pos(const sf::Vector2i& pos) {
@@ -66,17 +68,17 @@ void World::set_view_watcher(ViewWatcher* watcher) {
 //   return to_return;
 // }
 
-// void World::add_neighbors_to_potential_tile_pos(const sf::Vector2i& pos) {
-//   for (size_t i_dir = 0; i_dir < 4; i_dir += 1) {
-//     sf::Vector2i neigh = pos + CARDINAL_POINTS[i_dir];
-//     if (tiles.find(neigh) == tiles.end()) {
-//       if (view_watcher &&
-//           potential_tiles_pos.find(neigh) == potential_tiles_pos.end())
-//         view_watcher->push_back({neigh, nullptr});
-//       potential_tiles_pos.insert(neigh);
-//     }
-//   }
-// }
+void World::add_neighbors_to_potential_tile_pos(const sf::Vector2i& pos) {
+  for (size_t i_dir = 0; i_dir < 4; i_dir += 1) {
+    sf::Vector2i neigh = pos + CARDINAL_POINTS[i_dir];
+    if (tiles.find(neigh) == tiles.end()) {
+      if (view_watcher &&
+          potential_tiles_pos.find(neigh) == potential_tiles_pos.end())
+        view_watcher->push_back({neigh, nullptr});
+      potential_tiles_pos.insert(neigh);
+    }
+  }
+}
 
 // void World::next() {
 //   for (const sf::Vector2i& pos : potential_tiles_pos) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "view.h"
 #include "world.h"
 
 struct ParseNullGlue : public std::exception {
@@ -40,7 +41,7 @@ class Parser {
   std::map<std::string, TileType> all_tile_types;
   std::map<char, std::string> all_tile_types_name;
 
-  void parse_configuration_file_world_section_input(Yaml::Node& root);
+  void parse_configuration_file_world_section_configuration(Yaml::Node& root);
 
   World& world;
 };

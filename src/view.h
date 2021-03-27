@@ -35,20 +35,30 @@ class WorldView : public sf::Drawable, public sf::Transformable {
 
   void update();
 
+  ViewWatcher& get_view_watcher() { return view_watcher; }
+  const std::array<size_t, NB_GRAPHIC_LAYERS>& get_vertex_buffers_capacity() {
+    return vertex_buffers_capacity;
+  }
+  const std::array<size_t, NB_GRAPHIC_LAYERS>& get_vertex_counts() {
+    return vertex_counts;
+  }
+
+ private:
   const World& world;
   ViewWatcher view_watcher;
 
   std::array<size_t, NB_GRAPHIC_LAYERS> vertex_buffers_capacity;
   std::array<size_t, NB_GRAPHIC_LAYERS> vertex_counts;
 
- private:
+  std::array<std::vector<sf::Vertex>, NB_GRAPHIC_LAYERS> vertex_memory;
+
   virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
   std::vector<sf::Vertex> vertices_for_layer_and_tile(
       size_t i_layer, const std::pair<sf::Vector2i, TileType*>& pos_and_tile);
   void update_layer(size_t i_layer);
   void update_vertex_buffer(size_t i_layer,
-                            const std::vector<sf::Vertex> vertices_to_add);
+                            const std::vector<sf::Vertex>& vertices_to_add);
 
   std::array<sf::VertexBuffer, NB_GRAPHIC_LAYERS> vertex_buffers;
 };
