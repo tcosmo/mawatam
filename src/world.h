@@ -212,7 +212,7 @@ class World {
   // Positions neighboring at least one tile
   std::set<sf::Vector2i, CompareSfVector2i> potential_tiles_pos;
 
-  void add_neighbors_to_potential_tile_pos(const sf::Vector2i& pos);
+  void add_tile_neighbors_as_potential_tile_pos(const sf::Vector2i& pos);
   void init_potential_tiles_pos();
 
   /* Returns a vector of (`i_dir`, `glue`) where `glue` is the glue sitting on

@@ -22,26 +22,29 @@ WorldView::~WorldView() {}
 
 std::vector<sf::Vertex> WorldView::vertices_for_layer_and_tile(
     size_t i_layer, const std::pair<sf::Vector2i, TileType*>& pos_and_tile) {
-  std::vector<sf::Vertex> to_ret;
+  std::vector<sf::Vertex> no_vertices;
 
   switch (i_layer) {
     case LAYER_POTENTIAL_TILES:
-      // Null tile type means potential type
+      // Null tile type means potential tile
       if (!pos_and_tile.second)
         return get_filled_square_vertices(pos_and_tile.first,
                                           COLOR_POTENTIAL_TILE);
       break;
 
     case LAYER_TILES:
-
-      return get_filled_square_vertices(pos_and_tile.first, COLOR_INPUT_SQUARE);
+      if (!pos_and_tile.second) return no_vertices;
+      if (pos_and_tile.second->is_anonymous())
+        return get_filled_square_vertices(pos_and_tile.first,
+                                          COLOR_ANONYMOUS_TILE_TYPES);
+      else
+        return get_filled_square_vertices(pos_and_tile.first, COLOR_TILE_TYPES);
       break;
 
     default:
       break;
   }
-
-  return to_ret;
+  return no_vertices;
 }
 
 void WorldView::update_layer(size_t i_layer) {
@@ -88,8 +91,9 @@ void WorldView::update_vertex_buffer(
           CAPACITY_GROWTH_FACTOR * vertex_buffers_capacity[i_layer];
     }
 
-    if (vertex_buffers[i_layer].update(&vertex_memory[i_layer][0],
-                                       vertex_buffers_capacity[i_layer], 0)) {
+    if (vertex_buffers[i_layer].create(vertex_buffers_capacity[i_layer])) {
+      vertex_buffers[i_layer].update(&vertex_memory[i_layer][0],
+                                     vertex_memory[i_layer].size(), 0);
       DEBUG_VIEW_LOG << "[layer " << i_layer << "] New vertex buffer capacity: "
                      << vertex_buffers_capacity[i_layer];
       vertex_counts[i_layer] = vertex_memory[i_layer].size();
@@ -103,8 +107,8 @@ void WorldView::update_vertex_buffer(
       return;
     }
   } else {
-    vertex_buffers[i_layer].update(&vertices_to_add[0], vertex_counts[i_layer],
-                                   vertices_to_add.size());
+    vertex_buffers[i_layer].update(&vertices_to_add[0], vertices_to_add.size(),
+                                   vertex_counts[i_layer]);
     vertex_counts[i_layer] += vertices_to_add.size();
   }
 
@@ -124,6 +128,7 @@ void WorldView::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     // } else if (i_layer == LAYER_TILES) {
     //   states.texture = &font.getTexture(GRAPHIC_TILE_TEXT_SIZE);
     // }
-    target.draw(vertex_buffers[i_layer], states);
+    if (vertex_memory[i_layer].size() != 0)
+      target.draw(vertex_buffers[i_layer], states);
   }
 }

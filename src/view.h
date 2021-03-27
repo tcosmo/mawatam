@@ -13,8 +13,10 @@ const static int GRAPHIC_TILE_TEXT_SIZE = (int)(GRAPHIC_EDGE_LENGTH / 2);
 const static int GRAPHIC_EDGE_TEXT_SIZE = (int)(GRAPHIC_EDGE_LENGTH / 3);
 
 const static sf::Color COLOR_POTENTIAL_TILE = sf::Color(0, 100, 255, 140);
-const static sf::Color COLOR_INPUT_SQUARE =
+const static sf::Color COLOR_ANONYMOUS_TILE_TYPES =
     sf::Color(0.4 * 255, 0.4 * 255, 0.4 * 255);
+const static sf::Color COLOR_TILE_TYPES =
+    sf::Color(0.8 * 255, 0.8 * 255, 0.8 * 255);
 
 // Graphic layers
 const static size_t INITIAL_CAPACITY = 10;

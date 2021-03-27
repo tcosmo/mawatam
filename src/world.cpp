@@ -48,7 +48,7 @@ void World::set_view_watcher(ViewWatcher* watcher) {
 
 void World::init_potential_tiles_pos() {
   for (const auto& pos_and_square : tiles) {
-    add_neighbors_to_potential_tile_pos(pos_and_square.first);
+    add_tile_neighbors_as_potential_tile_pos(pos_and_square.first);
   }
 }
 
@@ -68,7 +68,7 @@ void World::init_potential_tiles_pos() {
 //   return to_return;
 // }
 
-void World::add_neighbors_to_potential_tile_pos(const sf::Vector2i& pos) {
+void World::add_tile_neighbors_as_potential_tile_pos(const sf::Vector2i& pos) {
   for (size_t i_dir = 0; i_dir < 4; i_dir += 1) {
     sf::Vector2i neigh = pos + CARDINAL_POINTS[i_dir];
     if (tiles.find(neigh) == tiles.end()) {
