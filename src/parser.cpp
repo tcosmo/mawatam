@@ -339,7 +339,8 @@ void Parser::parse_configuration_file_world_section_configuration(
 
   int temperature = root[KW_TEMPERATURE].As<int>(2);
   PARSER_LOG(INFO) << "Growing at temperature " << temperature;
-  world = World(tile_types, tiles, temperature);
+  world.set_tile_types_and_set_tiles(std::move(tile_types), std::move(tiles));
+  world.set_temperature(temperature);
 }
 
 void Parser::parse_configuration_file_world(Yaml::Node& root) {

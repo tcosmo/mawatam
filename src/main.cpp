@@ -1,5 +1,3 @@
-
-#include "parser.h"
 #include "simulator.h"
 
 INITIALIZE_EASYLOGGINGPP
@@ -29,7 +27,7 @@ int main(int argc, char** argv) {
   world.set_view_watcher(&world_view.get_view_watcher());
   world_view.update();
 
-  Simulator sim(world, world_view, 1200, 800);
+  Simulator sim(parser, world, world_view, 1200, 800);
   sim.run();
 
   LOG(INFO) << "Goodbye, be well!";

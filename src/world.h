@@ -175,9 +175,10 @@ enum GrowthMode {
 class World {
  public:
   World();
-  World(std::vector<std::unique_ptr<TileType>>& tile_types,
-        std::map<sf::Vector2i, const TileType*, CompareSfVector2i>& tiles,
-        int temperature, GrowthMode growth_mode = ASYNC_ORDERED);
+
+  void set_tile_types_and_set_tiles(
+      std::vector<std::unique_ptr<TileType>> ptile_types,
+      std::map<sf::Vector2i, const TileType*, CompareSfVector2i> p_tiles);
 
   const std::map<sf::Vector2i, const TileType*, CompareSfVector2i>& get_tiles()
       const {
@@ -192,6 +193,8 @@ class World {
   void set_growth_mode(GrowthMode p_growth_mode) {
     growth_mode = p_growth_mode;
   }
+
+  void set_temperature(int p_temperature) { temperature = p_temperature; }
 
   void next();
 

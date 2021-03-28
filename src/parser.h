@@ -26,6 +26,10 @@ class Parser {
   void parse_configuration_file(
       const std::string& p_configuration_file_content);
 
+  const std::string& get_configuration_file_content() {
+    return configuration_file_content;
+  }
+
  private:
   std::string configuration_file_path;
   std::string configuration_file_content;

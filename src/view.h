@@ -20,7 +20,7 @@ const static sf::Color COLOR_TILE_TYPES =
     sf::Color(0.6 * 255, 0.6 * 255, 0.6 * 255);
 
 // Graphic layers
-const static size_t INITIAL_CAPACITY = 10;
+const static size_t INITIAL_CAPACITY = 10000;
 const static size_t CAPACITY_GROWTH_FACTOR = 2;
 const static size_t NB_GRAPHIC_LAYERS = 7;
 const static size_t LAYER_POTENTIAL_TILES = 0;
@@ -39,6 +39,7 @@ class WorldView : public sf::Drawable, public sf::Transformable {
   ~WorldView();
 
   void update();
+  void reset();
 
   ViewWatcher& get_view_watcher() { return view_watcher; }
   const std::array<size_t, NB_GRAPHIC_LAYERS>& get_vertex_buffers_capacity() {

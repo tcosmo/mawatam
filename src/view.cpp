@@ -30,6 +30,17 @@ WorldView::WorldView(const World& world) : world(world) {
   glue_color_mode_char = true;
 }
 
+void WorldView::reset() {
+  for (size_t i_layer = 0; i_layer < NB_GRAPHIC_LAYERS; i_layer += 1) {
+    vertex_buffers[i_layer].setPrimitiveType(sf::Quads);
+    vertex_buffers[i_layer].setUsage(sf::VertexBuffer::Usage::Dynamic);
+    vertex_buffers[i_layer].create(INITIAL_CAPACITY);
+    vertex_buffers_capacity[i_layer] = INITIAL_CAPACITY;
+    vertex_counts[i_layer] = 0;
+    vertex_memory[i_layer].clear();
+  }
+}
+
 void WorldView::set_glue_alphabet_colors(
     std::map<std::string, sf::Color> p_glue_alphabet_colors) {
   glue_alphabet_colors = p_glue_alphabet_colors;

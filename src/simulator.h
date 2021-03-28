@@ -3,13 +3,15 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+#include "parser.h"
 #include "utils.h"
 #include "view.h"
 #include "world.h"
 
 class Simulator {
  public:
-  Simulator(World& world, WorldView& world_view, int screen_w, int screen_h);
+  Simulator(Parser& parser, World& world, WorldView& world_view, int screen_w,
+            int screen_h);
   void run();
 
  private:
@@ -21,6 +23,7 @@ class Simulator {
 
   World& world;
   WorldView& world_view;
+  Parser& parser;
 
   sf::RenderWindow window;
 

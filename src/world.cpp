@@ -6,24 +6,21 @@
 World::World() {
   view_watcher = nullptr;
   growth_mode = ASYNC_ORDERED;
+  temperature = 2;
 }
 
-World::World(std::vector<std::unique_ptr<TileType>>& tile_types,
-             std::map<sf::Vector2i, const TileType*, CompareSfVector2i>& tiles,
-             int temperature, GrowthMode growth_mode)
-    : tile_types(std::move(tile_types)),
-      tiles(std::move(tiles)),
-      temperature(temperature),
-      growth_mode(growth_mode) {
-  view_watcher = nullptr;
-
+void World::set_tile_types_and_set_tiles(
+    std::vector<std::unique_ptr<TileType>> p_tile_types,
+    std::map<sf::Vector2i, const TileType*, CompareSfVector2i> p_tiles) {
+  tile_types = std::move(p_tile_types);
+  tile_types_in_tileset.clear();
   // Have to use this->tile_types because of move
   for (const auto& tile_ptr : this->tile_types) {
     if (!tile_ptr.get()->is_anonymous()) {
       tile_types_in_tileset.push_back(tile_ptr.get());
     }
   }
-
+  tiles = std::move(p_tiles);
   init_potential_tiles_pos();
 }
 
