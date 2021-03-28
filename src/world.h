@@ -164,12 +164,20 @@ struct TileType {
 // Allow the view to know what's new
 typedef std::vector<std::pair<sf::Vector2i, const TileType*>> ViewWatcher;
 
+static const size_t NB_GROWTH_MODES = 3;
+enum GrowthMode {
+  ASYNC_ORDERED = 0,  // aTAM style growth where canonical order for tile
+                      // attachment is chosen
+  ASYNC_RANDOM,       // Same but no order, next tile chosen at random
+  SYNC                // Synchronous growth in a 2D CA style
+};
+
 class World {
  public:
   World();
   World(std::vector<std::unique_ptr<TileType>>& tile_types,
         std::map<sf::Vector2i, const TileType*, CompareSfVector2i>& tiles,
-        int temperature);
+        int temperature, GrowthMode growth_mode = ASYNC_ORDERED);
 
   const std::map<sf::Vector2i, const TileType*, CompareSfVector2i>& get_tiles()
       const {
@@ -180,14 +188,20 @@ class World {
     return potential_tiles_pos;
   }
 
-  // void next();
+  GrowthMode get_growth_mode() { return growth_mode; }
+  void set_growth_mode(GrowthMode p_growth_mode) {
+    growth_mode = p_growth_mode;
+  }
 
-  // std::vector<TileType*> tileset_query(
-  //    std::vector<std::pair<size_t, Glue>> constraints);
+  void next();
+
+  std::vector<const TileType*> tileset_query(const SquareGlues& constraints);
 
   void set_view_watcher(ViewWatcher* watcher);
 
  private:
+  GrowthMode growth_mode;
+
   /* In the datam, not all tile types belong to the tileset
      Some are only used to specify the input configuration
      They are "anoymous tile types". The only constraint is that
@@ -219,8 +233,7 @@ class World {
   /* Returns a vector of (`i_dir`, `glue`) where `glue` is the glue sitting on
      side `i_dir` \in {0,1,2,3}. If there is no glue on a side, the pair wont be
      in the vector. */
-  std::vector<std::pair<size_t, Glue>> get_glues_surrounding_potential_tile_pos(
-      const sf::Vector2i& pos);
+  SquareGlues get_glues_surrounding_potential_tile_pos(const sf::Vector2i& pos);
 
   ViewWatcher* view_watcher;
 };

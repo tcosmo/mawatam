@@ -68,8 +68,21 @@ static const std::vector<sf::Color> COLOR_WHEEL_3 = {
     mac2_06,          mac2_07,        mac2_08, mac2_09, mac2_10, mac2_11,
     mac2_13,          mac2_14,        mac2_14, mac2_15, mac2_16};
 
+static const std::vector<sf::Color> COLOR_WHEEL_4 = {sf::Color(230, 198, 147),
+                                                     sf::Color(21, 197, 52),
+                                                     sf::Color(157, 4, 69),
+                                                     com64_02,
+                                                     com64_03,
+                                                     com64_04,
+                                                     com64_06,
+                                                     com64_07,
+                                                     com64_08,
+                                                     com64_09,
+                                                     com64_10};
+
 static sf::Color get_color_wheel_color(
     size_t i_color,
-    const std::vector<sf::Color>& colors = COLOR_WHEEL_SECONDARY) {
-  return colors[i_color % colors.size()];
+    const std::vector<sf::Color>& colors = COLOR_WHEEL_SECONDARY,
+    size_t offset = 0) {
+  return colors[(i_color + offset) % colors.size()];
 }

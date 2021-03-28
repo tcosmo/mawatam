@@ -8,7 +8,7 @@ sf::Vector2f world_pos_to_screen_pos(const sf::Vector2i& pos);
 std::vector<sf::Vertex> get_filled_centered_square_vertices(
     const sf::Vector2f& center, const sf::Color& fill_color,
     const float size = GRAPHIC_TILE_SIZE,
-    const float transparent_stroke_thick = 0);
+    const float transparent_stroke_thick = GRAPHIC_TILE_STROKE_THICK);
 
 std::vector<sf::Vertex> get_filled_triangle_vertices(
     const sf::Vector2f& A, const sf::Vector2f& B, const sf::Vector2f& C,
@@ -90,8 +90,11 @@ std::vector<sf::Vertex> WorldView::get_edges_vertices(
             : get_glue_char_color(tile_type->glues.at(i_dir));
 
     std::vector<sf::Vertex> to_add = get_filled_triangle_vertices(
-        tile_center, tile_center + GRAPHIC_TILE_SIZE * multipliers[i_dir],
-        tile_center + GRAPHIC_TILE_SIZE * multipliers[(i_dir + 1) % 4],
+        tile_center,
+        tile_center + (GRAPHIC_TILE_SIZE - GRAPHIC_TILE_STROKE_THICK) *
+                          multipliers[i_dir],
+        tile_center + (GRAPHIC_TILE_SIZE - GRAPHIC_TILE_STROKE_THICK) *
+                          multipliers[(i_dir + 1) % 4],
         fill_color);
 
     to_return.insert(to_return.begin(), to_add.begin(), to_add.end());
@@ -164,6 +167,7 @@ void WorldView::update_layer(size_t i_layer) {
 }
 
 void WorldView::update() {
+  if (view_watcher.size() == 0) return;
   for (size_t i_layer = 0; i_layer < NB_GRAPHIC_LAYERS; i_layer += 1) {
     DEBUG_VIEW_LOG << "[layer " << i_layer << "] " << view_watcher.size()
                    << " tiles to add";

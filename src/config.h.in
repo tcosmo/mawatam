@@ -20,8 +20,9 @@
 #define DEBUG_MODE 1
 // Trigger debug information for specific part of the code
 // if the global DEBUG_MODE flag is set to 0, no debug info is shown at all
-#define DEBUG_PARSER 1
-#define DEBUG_VIEW 1
+#define DEBUG_PARSER 0
+#define DEBUG_VIEW 0
+#define DEBUG_WORLD 0
 
 #if DEBUG_MODE == 0
 #define ELPP_DISABLE_DEBUG_LOGS

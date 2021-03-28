@@ -14,6 +14,7 @@
 #define LOGGER_PARSER "parser"
 #define LOGGER_NOT_IMPLEM "not_implem"
 #define LOGGER_VIEW "view"
+#define LOGGER_WORLD "world"
 
 #define NOT_IMPLEM_LOG CLOG(FATAL, LOGGER_NOT_IMPLEM)
 
@@ -63,9 +64,9 @@ static std::string strip(const std::string &inpt) {
 
 // model
 static const sf::Vector2i NORTH = sf::Vector2i{0, 1};
-static const sf::Vector2i EAST = sf::Vector2i{-1, 0};
+static const sf::Vector2i EAST = sf::Vector2i{1, 0};
 static const sf::Vector2i SOUTH = sf::Vector2i{0, -1};
-static const sf::Vector2i WEST = sf::Vector2i{1, 0};
+static const sf::Vector2i WEST = sf::Vector2i{-1, 0};
 
 static const sf::Vector2i CARDINAL_POINTS[4] = {NORTH, EAST, SOUTH, WEST};
 static size_t flip_direction(size_t i_dir) { return (i_dir + 2) % 4; }

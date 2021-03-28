@@ -377,13 +377,15 @@ void Parser::parse_configuration_file_view(Yaml::Node& root) {
 
   size_t i_color = 0;
   for (const std::string& alpha_name : glue_alphabet_names) {
-    glue_alphabet_colors[alpha_name] = get_color_wheel_color(i_color);
+    glue_alphabet_colors[alpha_name] =
+        get_color_wheel_color(i_color, COLOR_WHEEL_SECONDARY);
     i_color += 1;
   }
 
   i_color = 0;
   for (char glue_char : glue_alphabet_char) {
-    glue_char_colors[glue_char] = get_color_wheel_color(i_color);
+    glue_char_colors[glue_char] =
+        get_color_wheel_color(i_color, COLOR_WHEEL_4, 0);
     i_color += 1;
   }
 

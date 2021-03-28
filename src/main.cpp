@@ -12,6 +12,7 @@ void init_logger() {
   el::Loggers::getLogger(LOGGER_PARSER);
   el::Loggers::getLogger(LOGGER_NOT_IMPLEM);
   el::Loggers::getLogger(LOGGER_VIEW);
+  el::Loggers::getLogger(LOGGER_WORLD);
   el::Loggers::reconfigureAllLoggers(c);
   LOG(INFO) << "Welcome to datam!";
 }

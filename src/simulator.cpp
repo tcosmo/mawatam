@@ -4,6 +4,7 @@ Simulator::Simulator(World& world, WorldView& world_view, int screen_w,
                      int screen_h)
     : world(world), world_view(world_view) {
   window.create(sf::VideoMode(screen_w, screen_h), datam_PROG_NAME);
+  window.setPosition(sf::Vector2i(461, 1636));
   window.setFramerateLimit(TARGET_FPS);
   // window.setVerticalSyncEnabled(true);
   camera_init();
@@ -25,17 +26,19 @@ bool Simulator::is_alt_pressed() {
 }
 
 void Simulator::print_simulation_report() {
-  printf("=== Simulation Report ===\n");
-  printf("\n   == Tiles ==\n");
-  printf("      - Tiles: %zu\n", world.get_tiles().size());
-  printf("      - Potential tiles: %zu\n",
-         world.get_potential_tiles_pos().size());
-  printf("\n   == Vertex Buffers ==\n");
+  LOG(INFO) << "=== Simulation Report ===";
+
+  LOG(INFO) << "   == Tiles ==";
+  LOG(INFO) << "      - Growth Mode: " << world.get_growth_mode();
+  LOG(INFO) << "      - Tiles: " << world.get_tiles().size();
+  LOG(INFO) << "      - Potential tiles: "
+            << world.get_potential_tiles_pos().size();
+  LOG(INFO) << "   == Vertex Buffers ==";
 
   for (size_t i_layer = 0; i_layer < NB_GRAPHIC_LAYERS; i_layer += 1) {
-    printf("      - Layer %zu:  %zu/%zu\n", i_layer,
-           world_view.get_vertex_counts()[i_layer],
-           world_view.get_vertex_buffers_capacity()[i_layer]);
+    LOG(INFO) << "      - Layer " << i_layer << " :  "
+              << world_view.get_vertex_counts()[i_layer] << "/"
+              << world_view.get_vertex_buffers_capacity()[i_layer];
   }
 }
 
@@ -76,7 +79,7 @@ void Simulator::run() {
             break;
 
           case sf::Keyboard::N:
-            // world.next();
+            world.next();
             world_view.update();
             break;
 
@@ -88,6 +91,13 @@ void Simulator::run() {
           case sf::Keyboard::E:
             world_view.set_glue_color_mode_char(
                 !world_view.get_glue_color_mode_char());
+            break;
+
+          // Change growth mode
+          case sf::Keyboard::T:
+            world.set_growth_mode(static_cast<GrowthMode>(
+                (world.get_growth_mode() + 1) % NB_GROWTH_MODES));
+            LOG(INFO) << "Changed growth to " << world.get_growth_mode();
             break;
 
           case sf::Keyboard::R:

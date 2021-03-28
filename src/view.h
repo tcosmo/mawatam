@@ -12,7 +12,7 @@ const static float GRAPHIC_TILE_SIZE = GRAPHIC_EDGE_LENGTH;
 const static int GRAPHIC_TILE_TEXT_SIZE = (int)(GRAPHIC_EDGE_LENGTH / 2);
 const static int GRAPHIC_EDGE_TEXT_SIZE = (int)(GRAPHIC_EDGE_LENGTH / 3);
 
-const static int EDGE_CORLOR_TRANSPARENCY = 160;
+const static int EDGE_CORLOR_TRANSPARENCY = 200;
 const static sf::Color COLOR_POTENTIAL_TILE = sf::Color(0, 100, 255, 140);
 const static sf::Color COLOR_ANONYMOUS_TILE_TYPES =
     sf::Color(0.4 * 255, 0.4 * 255, 0.4 * 255);
