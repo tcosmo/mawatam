@@ -20,7 +20,7 @@ struct InvalidListRepr : public std::exception {
 
 class Parser {
  public:
-  Parser(World& world);
+  Parser(World& world, WorldView& view);
 
   void load_configuration_file(const std::string& p_configuration_file_path);
   void parse_configuration_file(
@@ -34,6 +34,7 @@ class Parser {
 
   void parse_configuration_file_world_section_glues(Yaml::Node& root);
   std::set<std::string> glue_alphabet_names;
+  std::set<char> glue_alphabet_char;
   std::map<std::string, Glue> all_glues;
 
   void parse_configuration_file_world_section_tileset_tile_types(
@@ -44,4 +45,7 @@ class Parser {
   void parse_configuration_file_world_section_configuration(Yaml::Node& root);
 
   World& world;
+
+  void parse_configuration_file_view(Yaml::Node& root);
+  WorldView& view;
 };

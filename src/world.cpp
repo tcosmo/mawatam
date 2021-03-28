@@ -18,7 +18,7 @@
 World::World() { view_watcher = nullptr; }
 
 World::World(std::vector<std::unique_ptr<TileType>>& tile_types,
-             std::map<sf::Vector2i, TileType*, CompareSfVector2i>& tiles,
+             std::map<sf::Vector2i, const TileType*, CompareSfVector2i>& tiles,
              int temperature)
     : tile_types(std::move(tile_types)),
       tiles(std::move(tiles)),

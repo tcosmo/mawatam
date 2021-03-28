@@ -30,8 +30,14 @@ tileset_tile_types:
 # Or use tile types of the tileset:
 # <x>, <y>: <tile_type_name>
 configuration:
-  0,0: [bin.0, null, null, null]
-  1,1: [null, null, null, ter.1]
+  0,1: "0"
+  1,1: "1"
+  2,1: "2"
+  0,0: "3"
+  1,0: "4"
+  2,0: "5"
+
+# The two following entries are not implem yet
 
 # You can specify the color with which the simulator will render
 # glues that use a given alphabet name:
@@ -40,3 +46,7 @@ configuration:
 glue_alphabets_color:
   bin: auto
   ter: auto
+
+# The view will either display glue colors given their
+# alphabet name or glue char can be toggled by pressing `e`
+default_glue_color_mode: alphabet

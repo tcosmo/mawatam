@@ -20,11 +20,11 @@ int main(int argc, char** argv) {
   init_logger();
 
   World world;
+  WorldView world_view(world);
 
-  Parser parser(world);
+  Parser parser(world, world_view);
   parser.load_configuration_file("examples/Collatz_configuration.yml");
 
-  WorldView world_view(world);
   world.set_view_watcher(&world_view.get_view_watcher());
   world_view.update();
 

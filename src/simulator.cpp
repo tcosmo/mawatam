@@ -64,7 +64,7 @@ void Simulator::draw_debug_grid() {
 }
 
 void Simulator::run() {
-  bool do_draw_debug_grid = DEBUG_MODE;
+  bool do_draw_debug_grid = false;
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -82,6 +82,12 @@ void Simulator::run() {
 
           case sf::Keyboard::G:
             do_draw_debug_grid = !do_draw_debug_grid;
+            break;
+
+          // Toggle edge color mode
+          case sf::Keyboard::E:
+            world_view.set_glue_color_mode_char(
+                !world_view.get_glue_color_mode_char());
             break;
 
           case sf::Keyboard::R:

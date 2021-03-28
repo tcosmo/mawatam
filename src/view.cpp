@@ -3,10 +3,16 @@
 #define DEBUG_VIEW_LOG CLOG_IF(DEBUG_VIEW, DEBUG, LOGGER_VIEW)
 #define VIEW_LOG(LVL) CLOG(LVL, LOGGER_VIEW)
 
-std::vector<sf::Vertex> get_filled_square_vertices(
-    const sf::Vector2i& tile_pos, const sf::Color& fill_color,
+sf::Vector2f world_pos_to_screen_pos(const sf::Vector2i& pos);
+
+std::vector<sf::Vertex> get_filled_centered_square_vertices(
+    const sf::Vector2f& center, const sf::Color& fill_color,
     const float size = GRAPHIC_TILE_SIZE,
-    const float offset = GRAPHIC_EDGE_THICK / 2);
+    const float transparent_stroke_thick = 0);
+
+std::vector<sf::Vertex> get_filled_triangle_vertices(
+    const sf::Vector2f& A, const sf::Vector2f& B, const sf::Vector2f& C,
+    const sf::Color& fill_color);
 
 WorldView::WorldView(const World& world) : world(world) {
   for (size_t i_layer = 0; i_layer < NB_GRAPHIC_LAYERS; i_layer += 1) {
@@ -16,30 +22,128 @@ WorldView::WorldView(const World& world) : world(world) {
     vertex_buffers_capacity[i_layer] = INITIAL_CAPACITY;
     vertex_counts[i_layer] = 0;
   }
+
+  glue_alphabet_colors[NULL_GLUE_ALPHA_NAME] = sf::Color::Transparent;
+  glue_char_colors[NULL_GLUE_CHAR] = sf::Color::Transparent;
+
+  // Wether or not glue colors are given by alphabet or by glue char
+  glue_color_mode_char = true;
+}
+
+void WorldView::set_glue_alphabet_colors(
+    std::map<std::string, sf::Color> p_glue_alphabet_colors) {
+  glue_alphabet_colors = p_glue_alphabet_colors;
+  glue_alphabet_colors[NULL_GLUE_ALPHA_NAME] = sf::Color::Transparent;
+
+  for (const auto& name_and_color : glue_alphabet_colors) {
+    if (name_and_color.first != NULL_GLUE_ALPHA_NAME)
+      glue_alphabet_colors[name_and_color.first].a = EDGE_CORLOR_TRANSPARENCY;
+  }
+}
+
+void WorldView::set_glue_char_color(
+    std::map<char, sf::Color> p_glue_char_colors) {
+  glue_char_colors = p_glue_char_colors;
+  glue_char_colors[NULL_GLUE_CHAR] = sf::Color::Transparent;
+  for (auto& name_and_color : glue_char_colors) {
+    if (name_and_color.first != NULL_GLUE_CHAR)
+      glue_char_colors[name_and_color.first].a = EDGE_CORLOR_TRANSPARENCY;
+  }
+}
+
+sf::Color WorldView::get_glue_alphabet_color(const Glue& glue) {
+  if (glue_alphabet_colors.find(glue.name.alphabet_name) ==
+      glue_alphabet_colors.end()) {
+    VIEW_LOG(WARNING) << "No color was registered for glue alphabet "
+                      << glue.name.alphabet_name;
+    return sf::Color::Black;
+  }
+  return glue_alphabet_colors[glue.name.alphabet_name];
+}
+
+sf::Color WorldView::get_glue_char_color(const Glue& glue) {
+  if (glue_char_colors.find(glue.name._char) == glue_char_colors.end()) {
+    VIEW_LOG(WARNING) << "No color was registered for glue char "
+                      << glue.name._char;
+    return sf::Color::Black;
+  }
+  return glue_char_colors[glue.name._char];
 }
 
 WorldView::~WorldView() {}
 
+std::vector<sf::Vertex> WorldView::get_edges_vertices(
+    const sf::Vector2i& tile_pos, const TileType* tile_type,
+    bool color_per_alphabet) {
+  std::vector<sf::Vertex> to_return;
+
+  sf::Vector2f tile_center = world_pos_to_screen_pos(tile_pos);
+
+  sf::Vector2f multipliers[4] = {
+      sf::Vector2f{-0.5f, -0.5f}, sf::Vector2f{0.5f, -0.5f},
+      sf::Vector2f{0.5f, 0.5f}, sf::Vector2f{-0.5f, 0.5f}};
+
+  for (size_t i_dir = 0; i_dir < 4; i_dir += 1) {
+    sf::Color fill_color =
+        (color_per_alphabet)
+            ? get_glue_alphabet_color(tile_type->glues.at(i_dir))
+            : get_glue_char_color(tile_type->glues.at(i_dir));
+
+    std::vector<sf::Vertex> to_add = get_filled_triangle_vertices(
+        tile_center, tile_center + GRAPHIC_TILE_SIZE * multipliers[i_dir],
+        tile_center + GRAPHIC_TILE_SIZE * multipliers[(i_dir + 1) % 4],
+        fill_color);
+
+    to_return.insert(to_return.begin(), to_add.begin(), to_add.end());
+  }
+
+  return to_return;
+}
+
 std::vector<sf::Vertex> WorldView::vertices_for_layer_and_tile(
-    size_t i_layer, const std::pair<sf::Vector2i, TileType*>& pos_and_tile) {
+    size_t i_layer,
+    const std::pair<sf::Vector2i, const TileType*>& pos_and_tile) {
   std::vector<sf::Vertex> no_vertices;
+
+  std::string tile_name_or_anonymous = "";
+  if (pos_and_tile.second)
+    tile_name_or_anonymous =
+        (pos_and_tile.second->is_anonymous())
+            ? "anonymous"
+            : std::string("named `") +
+                  std::string(1, pos_and_tile.second->name) + "`";
 
   switch (i_layer) {
     case LAYER_POTENTIAL_TILES:
       // Null tile type means potential tile
       if (!pos_and_tile.second)
-        return get_filled_square_vertices(pos_and_tile.first,
-                                          COLOR_POTENTIAL_TILE);
+        return get_filled_centered_square_vertices(
+            world_pos_to_screen_pos(pos_and_tile.first), COLOR_POTENTIAL_TILE);
       break;
 
-    case LAYER_TILES:
+    case LAYER_TILES_BACKGROUND:
       if (!pos_and_tile.second) return no_vertices;
+
+      DEBUG_VIEW_LOG << "Adding vertices for " << tile_name_or_anonymous
+                     << " tile at position: " << pos_and_tile.first;
       if (pos_and_tile.second->is_anonymous())
-        return get_filled_square_vertices(pos_and_tile.first,
-                                          COLOR_ANONYMOUS_TILE_TYPES);
+        return get_filled_centered_square_vertices(
+            world_pos_to_screen_pos(pos_and_tile.first),
+            COLOR_ANONYMOUS_TILE_TYPES, GRAPHIC_TILE_SIZE, 0);
       else
-        return get_filled_square_vertices(pos_and_tile.first, COLOR_TILE_TYPES);
+        return get_filled_centered_square_vertices(
+            world_pos_to_screen_pos(pos_and_tile.first), COLOR_TILE_TYPES,
+            GRAPHIC_TILE_SIZE, 0);
+
       break;
+
+    case LAYER_EDGES_COLOR_PER_ALPHABET:
+      if (!pos_and_tile.second) return no_vertices;
+      return get_edges_vertices(pos_and_tile.first, pos_and_tile.second, true);
+
+    case LAYER_EDGES_COLOR_PER_CHAR:
+      if (!pos_and_tile.second) return no_vertices;
+      return get_edges_vertices(pos_and_tile.first, pos_and_tile.second, false);
 
     default:
       break;
@@ -50,9 +154,6 @@ std::vector<sf::Vertex> WorldView::vertices_for_layer_and_tile(
 void WorldView::update_layer(size_t i_layer) {
   std::vector<sf::Vertex> vertices_to_add;
   for (const auto& pos_and_tile : view_watcher) {
-    DEBUG_VIEW_LOG << "[layer " << i_layer << "] "
-                   << "Adding vertices for tile at position: "
-                   << pos_and_tile.first;
     std::vector<sf::Vertex> vertices =
         vertices_for_layer_and_tile(i_layer, pos_and_tile);
     for (const sf::Vertex& vertex : vertices) {
@@ -123,11 +224,14 @@ void WorldView::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
   for (size_t i_layer = 0; i_layer < NB_GRAPHIC_LAYERS; i_layer += 1) {
     // apply the layer's texture
-    // if (i_layer == LAYER_EDGES) {
-    //   states.texture = &font.getTexture(GRAPHIC_EDGE_TEXT_SIZE);
-    // } else if (i_layer == LAYER_TILES) {
-    //   states.texture = &font.getTexture(GRAPHIC_TILE_TEXT_SIZE);
-    // }
+    // states.texture = &font.getTexture(GRAPHIC_EDGE_TEXT_SIZE);
+
+    // Choose between drawing edges colors per char or alphabet
+    if (i_layer == LAYER_EDGES_COLOR_PER_CHAR)
+      if (!glue_color_mode_char) continue;
+    if (i_layer == LAYER_EDGES_COLOR_PER_ALPHABET)
+      if (glue_color_mode_char) continue;
+
     if (vertex_memory[i_layer].size() != 0)
       target.draw(vertex_buffers[i_layer], states);
   }

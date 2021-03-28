@@ -43,12 +43,15 @@ class Formatter {
   Formatter &operator=(Formatter &);
 };
 
-struct CompareSfVector2i {
-  bool operator()(const sf::Vector2<int> &a, const sf::Vector2<int> &b) const {
+template <typename T>
+struct CompareSfVector2 {
+  bool operator()(const sf::Vector2<T> &a, const sf::Vector2<T> &b) const {
     if (a.x == b.x) return a.y < b.y;
     return a.x < b.x;
   }
 };
+
+typedef CompareSfVector2<int> CompareSfVector2i;
 
 static std::string strip(const std::string &inpt) {
   auto start_it = inpt.begin();
@@ -104,3 +107,43 @@ inline float Euclidean_norm(const sf::Vector2f &vect) {
 inline sf::Vector2f get_normal_unit_vector(const sf::Vector2f &vect) {
   return {vect.y / Euclidean_norm(vect), -1 * vect.x / Euclidean_norm(vect)};
 }
+
+template <typename T>
+struct CoupleVector2 {
+  sf::Vector2<T> first;
+  sf::Vector2<T> second;
+
+  inline static const CompareSfVector2<T> cmp = CompareSfVector2<T>();
+
+  CoupleVector2(const sf::Vector2<T> &a, const sf::Vector2<T> &b) {
+    if (cmp(a, b)) {
+      first = a;
+      second = b;
+    } else {
+      first = b;
+      second = a;
+    }
+  }
+
+  bool operator==(const CoupleVector2<T> &other) const {
+    return first == other.first && second == other.second;
+  }
+
+  bool operator<(const CoupleVector2<T> &other) const {
+    if (first == other.first) return cmp(second, other.second);
+    return cmp(first, other.first);
+  }
+
+  std::string __str__() const {
+    std::ostringstream buffer;
+    buffer << "(" << first << "," << second << ")";
+    return buffer.str();
+  }
+
+  friend std::ostream &operator<<(std::ostream &os, CoupleVector2<T> const &m) {
+    return os << m.__str__();
+  }
+};
+
+typedef CoupleVector2<float> CoupleVector2f;
+typedef CoupleVector2<int> CoupleVector2i;

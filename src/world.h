@@ -95,6 +95,7 @@ struct SquareGlues {
                            const std::map<std::string, Glue>& all_glues);
 
   Glue& operator[](size_t index) { return glues[index]; }
+  const Glue& at(size_t index) const { return glues[index]; }
 
   bool operator==(const SquareGlues& other) const {
     return glues == other.glues;
@@ -161,16 +162,16 @@ struct TileType {
 };
 
 // Allow the view to know what's new
-typedef std::vector<std::pair<sf::Vector2i, TileType*>> ViewWatcher;
+typedef std::vector<std::pair<sf::Vector2i, const TileType*>> ViewWatcher;
 
 class World {
  public:
   World();
   World(std::vector<std::unique_ptr<TileType>>& tile_types,
-        std::map<sf::Vector2i, TileType*, CompareSfVector2i>& tiles,
+        std::map<sf::Vector2i, const TileType*, CompareSfVector2i>& tiles,
         int temperature);
 
-  const std::map<sf::Vector2i, TileType*, CompareSfVector2i>& get_tiles()
+  const std::map<sf::Vector2i, const TileType*, CompareSfVector2i>& get_tiles()
       const {
     return tiles;
   }
@@ -202,10 +203,10 @@ class World {
 
   // Pointers to the tile types that are actually part of our tileset (i.e. non
   // anonymous tile types)
-  std::vector<TileType*> tile_types_in_tileset;
+  std::vector<const TileType*> tile_types_in_tileset;
 
   // Our 2D map of tiles
-  std::map<sf::Vector2i, TileType*, CompareSfVector2i> tiles;
+  std::map<sf::Vector2i, const TileType*, CompareSfVector2i> tiles;
 
   int temperature;
 

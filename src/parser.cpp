@@ -5,6 +5,9 @@
 
 #include "yaml/Yaml.hpp"
 
+// Color wheels
+#include "wheels.h"
+
 #define DEBUG_PARSER_LOG CLOG_IF(DEBUG_PARSER, DEBUG, LOGGER_PARSER)
 #define PARSER_LOG(LVL) CLOG(LVL, LOGGER_PARSER)
 
@@ -20,7 +23,7 @@ const std::array SECTION_KW = {KW_GLUE_ALPHA_COLOR, KW_GLUES,
                                KW_TILESET_TILE_TYPES, KW_CONFIGURATION,
                                KW_TEMPERATURE};
 
-Parser::Parser(World& world) : world(world) {
+Parser::Parser(World& world, WorldView& view) : world(world), view(view) {
   // Register the null glue as a glue
   all_glues[NULL_GLUE.name()] = NULL_GLUE;
 }
@@ -114,6 +117,7 @@ void Parser::parse_configuration_file_world_section_glues(Yaml::Node& root) {
     try {
       Glue glue = Glue::parse((*it));
       glue_alphabet_names.insert(glue.name.alphabet_name);
+      glue_alphabet_char.insert(glue.name._char);
       DEBUG_PARSER_LOG << "Successfully parsed glue: `" << glue << "`";
 
       // No need to check for glue.name() unicity: yaml parser
@@ -312,7 +316,7 @@ void Parser::parse_configuration_file_world_section_configuration(
   /* Converting the tile map from pointing to tile types repr to the actual tile
    * type and filling the world initial configuation. */
   std::vector<std::unique_ptr<TileType>> tile_types;
-  std::map<sf::Vector2i, TileType*, CompareSfVector2i> tiles;
+  std::map<sf::Vector2i, const TileType*, CompareSfVector2i> tiles;
 
   std::map<std::string, size_t> tile_types_to_their_unique_ptr_loc;
   size_t i = 0;
@@ -363,6 +367,30 @@ void Parser::parse_configuration_file_world(Yaml::Node& root) {
   parse_configuration_file_world_section_configuration(root);
 }
 
+void Parser::parse_configuration_file_view(Yaml::Node& root) {
+  /* TODO: view parameters are hardcoded at the minute, they should be parsed.
+   */
+  view.set_glue_color_mode_char(true);
+
+  std::map<std::string, sf::Color> glue_alphabet_colors;
+  std::map<char, sf::Color> glue_char_colors;
+
+  size_t i_color = 0;
+  for (const std::string& alpha_name : glue_alphabet_names) {
+    glue_alphabet_colors[alpha_name] = get_color_wheel_color(i_color);
+    i_color += 1;
+  }
+
+  i_color = 0;
+  for (char glue_char : glue_alphabet_char) {
+    glue_char_colors[glue_char] = get_color_wheel_color(i_color);
+    i_color += 1;
+  }
+
+  view.set_glue_alphabet_colors(std::move(glue_alphabet_colors));
+  view.set_glue_char_color(std::move(glue_char_colors));
+}
+
 void Parser::parse_configuration_file(
     const std::string& p_configuration_file_content) {
   configuration_file_content = p_configuration_file_content;
@@ -377,6 +405,7 @@ void Parser::parse_configuration_file(
   }
 
   parse_configuration_file_world(root);
+  parse_configuration_file_view(root);
 
   // Section glue alphabets color
   // for (auto itN = root[KW_GLUE_ALPHA_COLOR].Begin();
