@@ -126,6 +126,10 @@ void World::next() {
     }
   }
 
+  // If you remove this guard you'll get a floating point exception
+  // down below trying to % 0 for random
+  if (tiles_to_add.size() == 0) return;
+
   bool apply_all = (growth_mode == SYNC);
   size_t apply_only_i = 0;
   if (growth_mode == ASYNC_RANDOM)
