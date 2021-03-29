@@ -377,12 +377,19 @@ void Parser::parse_configuration_file_world(Yaml::Node& root) {
 void Parser::parse_configuration_file_view(Yaml::Node& root) {
   /* TODO: view parameters are hardcoded at the minute, they should be parsed.
    */
-  view.set_glue_color_mode_char(true);
 
+  std::map<char, sf::Color> tiles_colors;
   std::map<std::string, sf::Color> glue_alphabet_colors;
   std::map<char, sf::Color> glue_char_colors;
 
   size_t i_color = 0;
+
+  for (const auto& tile_char_and_repr : all_tile_types_name) {
+    tiles_colors[tile_char_and_repr.first] =
+        get_color_wheel_color(i_color, COLOR_WHEEL_SECONDARY);
+    i_color += 1;
+  }
+
   for (const std::string& alpha_name : glue_alphabet_names) {
     glue_alphabet_colors[alpha_name] =
         get_color_wheel_color(i_color, COLOR_WHEEL_SECONDARY);
@@ -396,6 +403,7 @@ void Parser::parse_configuration_file_view(Yaml::Node& root) {
     i_color += 1;
   }
 
+  view.set_tiles_colors(std::move(tiles_colors));
   view.set_glue_alphabet_colors(std::move(glue_alphabet_colors));
   view.set_glue_char_color(std::move(glue_char_colors));
 }

@@ -53,6 +53,7 @@ struct CompareSfVector2 {
 };
 
 typedef CompareSfVector2<int> CompareSfVector2i;
+typedef CompareSfVector2<float> CompareSfVector2f;
 
 static std::string strip(const std::string &inpt) {
   auto start_it = inpt.begin();
@@ -63,6 +64,7 @@ static std::string strip(const std::string &inpt) {
 }
 
 // model
+static const char *DIRECTIONS[4] = {"NORTH", "EAST", "SOUTH", "WEST"};
 static const sf::Vector2i NORTH = sf::Vector2i{0, 1};
 static const sf::Vector2i EAST = sf::Vector2i{1, 0};
 static const sf::Vector2i SOUTH = sf::Vector2i{0, -1};
@@ -76,6 +78,8 @@ static const sf::Vector2f VIEW_NORTH = sf::Vector2f({0, -1});
 static const sf::Vector2f VIEW_EAST = sf::Vector2f({1, 0});
 static const sf::Vector2f VIEW_SOUTH = sf::Vector2f({0, 1});
 static const sf::Vector2f VIEW_WEST = sf::Vector2f({-1, 0});
+static const sf::Vector2f VIEW_CARDINAL_POINTS[4] = {VIEW_NORTH, VIEW_EAST,
+                                                     VIEW_SOUTH, VIEW_WEST};
 
 /* Printing Coordinates */
 template <typename T>

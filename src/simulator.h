@@ -38,6 +38,7 @@ class Simulator {
     sf::View view;
     sf::View initial_view;
     sf::Vector2f default_trans_vec;
+    float zoom;
     float default_zoom_step;
     bool mouse_has_left;
     bool drag_move_mode;

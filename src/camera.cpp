@@ -10,6 +10,7 @@ void Simulator::camera_init() {
   camera_params.default_zoom_step = 1.5;
   camera_params.drag_move_mode = false;
   camera_params.mouse_has_left = false;
+  camera_params.zoom = 1.0f;
 }
 
 void Simulator::camera_center(const sf::Vector2f& where) {
@@ -24,6 +25,8 @@ void Simulator::camera_translate(const sf::Vector2f& d_pos) {
 
 void Simulator::camera_zoom(float zoom_factor) {
   camera_params.view.zoom(1 / zoom_factor);
+  camera_params.zoom *= zoom_factor;
+  world_view.set_zoom(camera_params.zoom);
   window.setView(camera_params.view);
 }
 

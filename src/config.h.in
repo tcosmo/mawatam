@@ -33,3 +33,5 @@
 #define LOGGER_CONF      \
   "*GLOBAL:\n FORMAT = " \
   "%level [%logger] %msg"
+
+const char DEFAULT_FONT[] = "assets/fonts/arial.ttf";

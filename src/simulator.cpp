@@ -33,6 +33,11 @@ void Simulator::print_simulation_report() {
   LOG(INFO) << "      - Tiles: " << world.get_tiles().size();
   LOG(INFO) << "      - Potential tiles: "
             << world.get_potential_tiles_pos().size();
+  LOG(INFO) << "   == CAMERA ==";
+  LOG(INFO) << "      - Center: " << camera_params.view.getCenter();
+  LOG(INFO) << "      - Size: " << camera_params.view.getSize();
+  LOG(INFO) << "      - Zoom: " << camera_params.zoom;
+
   LOG(INFO) << "   == Vertex Buffers ==";
 
   for (size_t i_layer = 0; i_layer < NB_GRAPHIC_LAYERS; i_layer += 1) {
@@ -83,18 +88,8 @@ void Simulator::run() {
             world_view.update();
             break;
 
-          case sf::Keyboard::G:
-            do_draw_debug_grid = !do_draw_debug_grid;
-            break;
-
-          // Toggle edge color mode
-          case sf::Keyboard::E:
-            world_view.set_glue_color_mode_char(
-                !world_view.get_glue_color_mode_char());
-            break;
-
           // Change growth mode
-          case sf::Keyboard::T:
+          case sf::Keyboard::G:
             world.set_growth_mode(static_cast<GrowthMode>(
                 (world.get_growth_mode() + 1) % NB_GROWTH_MODES));
             LOG(INFO) << "Changed growth to " << world.get_growth_mode();
@@ -105,6 +100,60 @@ void Simulator::run() {
             world_view.reset();
             parser.reset_world_to_initial_configuration();
             world_view.update();
+            break;
+
+          case sf::Keyboard::P:
+            do_draw_debug_grid = !do_draw_debug_grid;
+            break;
+
+          // Show graphic layers
+          case sf::Keyboard::Num0:
+          case sf::Keyboard::Numpad0:
+            world_view.toggle_show_layer(LAYER_POTENTIAL_TILES);
+            break;
+
+          case sf::Keyboard::Num1:
+          case sf::Keyboard::Numpad1:
+            world_view.toggle_show_layer(LAYER_TILES_BACKGROUND);
+            break;
+
+          case sf::Keyboard::Num2:
+          case sf::Keyboard::Numpad2:
+            world_view.toggle_show_layer(LAYER_EDGES_COLOR_PER_CHAR);
+            world_view.toggle_show_layer(LAYER_EDGES_COLOR_PER_ALPHABET);
+            break;
+
+          case sf::Keyboard::Num3:
+          case sf::Keyboard::Numpad3:
+            world_view.toggle_show_layer(LAYER_EDGES_COLOR_PER_CHAR);
+            world_view.toggle_show_layer(LAYER_EDGES_COLOR_PER_ALPHABET);
+            break;
+
+          case sf::Keyboard::Num4:
+          case sf::Keyboard::Numpad4:
+            if (!world_view.get_show_layer(LAYER_TILES_COLOR)) {
+              world_view.toggle_show_layer(LAYER_TILES_COLOR, true, true);
+              world_view.toggle_show_layer(LAYER_EDGES_COLOR_PER_CHAR, true,
+                                           false);
+              world_view.toggle_show_layer(LAYER_EDGES_COLOR_PER_ALPHABET, true,
+                                           false);
+            } else {
+              world_view.toggle_show_layer(LAYER_TILES_COLOR, true, false);
+              world_view.toggle_show_layer(LAYER_EDGES_COLOR_PER_CHAR, true,
+                                           true);
+              world_view.toggle_show_layer(LAYER_EDGES_COLOR_PER_ALPHABET, true,
+                                           false);
+            }
+            break;
+
+          case sf::Keyboard::Num5:
+          case sf::Keyboard::Numpad5:
+            world_view.toggle_show_layer(LAYER_TILES_TEXT);
+            break;
+
+          case sf::Keyboard::Num6:
+          case sf::Keyboard::Numpad6:
+            world_view.toggle_show_layer(LAYER_EDGES_TEXT);
             break;
 
           case sf::Keyboard::Escape:

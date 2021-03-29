@@ -14,7 +14,14 @@ std::vector<sf::Vertex> get_filled_triangle_vertices(
     const sf::Vector2f& A, const sf::Vector2f& B, const sf::Vector2f& C,
     const sf::Color& fill_color);
 
-WorldView::WorldView(const World& world) : world(world) {
+std::vector<sf::Vertex> get_glyph_vertices(const sf::Vector2f& glyph_center,
+                                           char glyph_char,
+                                           const sf::Font& font, int text_size,
+                                           sf::Color text_color,
+                                           bool bold = false);
+
+WorldView::WorldView(const World& world, const sf::Font* font)
+    : world(world), font(font) {
   for (size_t i_layer = 0; i_layer < NB_GRAPHIC_LAYERS; i_layer += 1) {
     vertex_buffers[i_layer].setPrimitiveType(sf::Quads);
     vertex_buffers[i_layer].setUsage(sf::VertexBuffer::Usage::Dynamic);
@@ -26,8 +33,29 @@ WorldView::WorldView(const World& world) : world(world) {
   glue_alphabet_colors[NULL_GLUE_ALPHA_NAME] = sf::Color::Transparent;
   glue_char_colors[NULL_GLUE_CHAR] = sf::Color::Transparent;
 
-  // Wether or not glue colors are given by alphabet or by glue char
-  glue_color_mode_char = true;
+  show_layer[LAYER_POTENTIAL_TILES] = true;
+  show_layer[LAYER_TILES_BACKGROUND] = true;
+  show_layer[LAYER_EDGES_COLOR_PER_ALPHABET] = false;
+  show_layer[LAYER_EDGES_COLOR_PER_CHAR] = true;
+  show_layer[LAYER_EDGES_TEXT] = true;
+  show_layer[LAYER_TILES_TEXT] = true;
+  show_layer[LAYER_TILES_COLOR] = false;
+
+  camera_zoom = 1.0f;
+}
+
+void WorldView::set_zoom(float zoom) {
+  if (zoom < LOD_TEXT_THRESHOLD)
+    DEBUG_VIEW_LOG << "Disabling text because zoom too far out";
+  camera_zoom = zoom;
+}
+
+void WorldView::toggle_show_layer(size_t i_layer, bool set_value, bool value) {
+  if (i_layer >= show_layer.size()) return;
+  if (!set_value)
+    show_layer[i_layer] = !show_layer[i_layer];
+  else
+    show_layer[i_layer] = value;
 }
 
 void WorldView::reset() {
@@ -41,8 +69,17 @@ void WorldView::reset() {
     vertex_buffers_capacity[i_layer] = INITIAL_CAPACITY;
     vertex_counts[i_layer] = 0;
     vertex_memory[i_layer].clear();
+
+    pos_used_by_layer[i_layer].clear();
   }
   view_watcher.clear();
+}
+
+void WorldView::set_tiles_colors(std::map<char, sf::Color> p_tiles_colors) {
+  tiles_colors = p_tiles_colors;
+  for (const auto& name_and_color : p_tiles_colors) {
+    tiles_colors[name_and_color.first].a = COLOR_TRANSPARENCY_TILE_COLOR;
+  }
 }
 
 void WorldView::set_glue_alphabet_colors(
@@ -52,7 +89,7 @@ void WorldView::set_glue_alphabet_colors(
 
   for (const auto& name_and_color : glue_alphabet_colors) {
     if (name_and_color.first != NULL_GLUE_ALPHA_NAME)
-      glue_alphabet_colors[name_and_color.first].a = EDGE_CORLOR_TRANSPARENCY;
+      glue_alphabet_colors[name_and_color.first].a = COLOR_TRANSPARENCY_EDGE;
   }
 }
 
@@ -62,8 +99,17 @@ void WorldView::set_glue_char_color(
   glue_char_colors[NULL_GLUE_CHAR] = sf::Color::Transparent;
   for (auto& name_and_color : glue_char_colors) {
     if (name_and_color.first != NULL_GLUE_CHAR)
-      glue_char_colors[name_and_color.first].a = EDGE_CORLOR_TRANSPARENCY;
+      glue_char_colors[name_and_color.first].a = COLOR_TRANSPARENCY_EDGE;
   }
+}
+
+sf::Color WorldView::get_tiles_color(char tile_name) {
+  if (tiles_colors.find(tile_name) == tiles_colors.end()) {
+    VIEW_LOG(WARNING) << "No color was registered for tile `" << tile_name
+                      << "`";
+    return sf::Color::Black;
+  }
+  return tiles_colors[tile_name];
 }
 
 sf::Color WorldView::get_glue_alphabet_color(const Glue& glue) {
@@ -88,7 +134,7 @@ sf::Color WorldView::get_glue_char_color(const Glue& glue) {
 WorldView::~WorldView() {}
 
 std::vector<sf::Vertex> WorldView::get_edges_vertices(
-    const sf::Vector2i& tile_pos, const TileType* tile_type,
+    const sf::Vector2i& tile_pos, const TileType& tile_type,
     bool color_per_alphabet) {
   std::vector<sf::Vertex> to_return;
 
@@ -101,8 +147,8 @@ std::vector<sf::Vertex> WorldView::get_edges_vertices(
   for (size_t i_dir = 0; i_dir < 4; i_dir += 1) {
     sf::Color fill_color =
         (color_per_alphabet)
-            ? get_glue_alphabet_color(tile_type->glues.at(i_dir))
-            : get_glue_char_color(tile_type->glues.at(i_dir));
+            ? get_glue_alphabet_color(tile_type.glues.at(i_dir))
+            : get_glue_char_color(tile_type.glues.at(i_dir));
 
     std::vector<sf::Vertex> to_add = get_filled_triangle_vertices(
         tile_center,
@@ -114,6 +160,61 @@ std::vector<sf::Vertex> WorldView::get_edges_vertices(
 
     to_return.insert(to_return.begin(), to_add.begin(), to_add.end());
   }
+
+  return to_return;
+}
+
+std::vector<sf::Vertex> WorldView::get_edges_text(const sf::Vector2i& tile_pos,
+                                                  const TileType& tile_type) {
+  sf::Vector2f tile_center = world_pos_to_screen_pos(tile_pos);
+  std::vector<sf::Vertex> to_return;
+
+  for (size_t i_dir = 0; i_dir < 4; i_dir += 1) {
+    char to_draw = tile_type.glues.at(i_dir).name._char;
+
+    if (to_draw == NULL_GLUE_CHAR) continue;
+
+    sf::Vector2f glyph_center =
+        tile_center + VIEW_CARDINAL_POINTS[i_dir] * (GRAPHIC_TILE_SIZE / 2);
+
+    if (pos_used_by_layer[LAYER_EDGES_TEXT].find(glyph_center) !=
+        pos_used_by_layer[LAYER_EDGES_TEXT].end()) {
+      continue;
+    }
+
+    pos_used_by_layer[LAYER_EDGES_TEXT].insert(glyph_center);
+
+    std::vector<sf::Vertex> to_add =
+        get_glyph_vertices(glyph_center, to_draw, *font, GRAPHIC_EDGE_TEXT_SIZE,
+                           COLOR_EDGE_TEXT, true);
+    to_return.insert(to_return.begin(), to_add.begin(), to_add.end());
+    DEBUG_VIEW_LOG << "Adding character glyph `" << to_draw << "` for edge "
+                   << DIRECTIONS[i_dir] << " on tile " << tile_pos;
+  }
+
+  return to_return;
+}
+
+std::vector<sf::Vertex> WorldView::get_tile_text(const sf::Vector2i& tile_pos,
+                                                 const TileType& tile_type) {
+  sf::Vector2f tile_center = world_pos_to_screen_pos(tile_pos);
+  std::vector<sf::Vertex> to_return;
+  if (tile_type.is_anonymous()) return to_return;
+  char to_draw = tile_type.name;
+
+  if (pos_used_by_layer[LAYER_TILES_TEXT].find(tile_center) !=
+      pos_used_by_layer[LAYER_TILES_TEXT].end()) {
+    return to_return;
+  }
+
+  pos_used_by_layer[LAYER_TILES_TEXT].insert(tile_center);
+
+  std::vector<sf::Vertex> to_add =
+      get_glyph_vertices(tile_center, to_draw, *font, GRAPHIC_TILE_TEXT_SIZE,
+                         COLOR_TILE_TEXT, true);
+  to_return.insert(to_return.begin(), to_add.begin(), to_add.end());
+  DEBUG_VIEW_LOG << "Adding character glyph `" << to_draw << "` for tile "
+                 << tile_pos;
 
   return to_return;
 }
@@ -157,13 +258,27 @@ std::vector<sf::Vertex> WorldView::vertices_for_layer_and_tile(
 
     case LAYER_EDGES_COLOR_PER_ALPHABET:
       if (!pos_and_tile.second) return no_vertices;
-      return get_edges_vertices(pos_and_tile.first, pos_and_tile.second, true);
+      return get_edges_vertices(pos_and_tile.first, *pos_and_tile.second, true);
 
     case LAYER_EDGES_COLOR_PER_CHAR:
       if (!pos_and_tile.second) return no_vertices;
-      return get_edges_vertices(pos_and_tile.first, pos_and_tile.second, false);
+      return get_edges_vertices(pos_and_tile.first, *pos_and_tile.second,
+                                false);
+
+    case LAYER_EDGES_TEXT:
+      if (!pos_and_tile.second || !font) return no_vertices;
+      return get_edges_text(pos_and_tile.first, *pos_and_tile.second);
+
+    case LAYER_TILES_TEXT:
+      if (!pos_and_tile.second || !font) return no_vertices;
+      return get_tile_text(pos_and_tile.first, *pos_and_tile.second);
 
     default:
+      if (!pos_and_tile.second || pos_and_tile.second->is_anonymous())
+        return no_vertices;
+      return get_filled_centered_square_vertices(
+          world_pos_to_screen_pos(pos_and_tile.first),
+          get_tiles_color(pos_and_tile.second->name));
       break;
   }
   return no_vertices;
@@ -245,13 +360,17 @@ void WorldView::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     // apply the layer's texture
     // states.texture = &font.getTexture(GRAPHIC_EDGE_TEXT_SIZE);
 
-    // Choose between drawing edges colors per char or alphabet
-    if (i_layer == LAYER_EDGES_COLOR_PER_CHAR)
-      if (!glue_color_mode_char) continue;
-    if (i_layer == LAYER_EDGES_COLOR_PER_ALPHABET)
-      if (glue_color_mode_char) continue;
+    if (vertex_memory[i_layer].size() != 0) {
+      if (i_layer == LAYER_EDGES_TEXT) {
+        states.texture = &(font->getTexture(GRAPHIC_EDGE_TEXT_SIZE));
+        if (camera_zoom < LOD_TEXT_THRESHOLD) continue;
+      }
+      if (i_layer == LAYER_TILES_TEXT) {
+        states.texture = &(font->getTexture(GRAPHIC_TILE_TEXT_SIZE));
+        if (camera_zoom < LOD_TEXT_THRESHOLD) continue;
+      }
 
-    if (vertex_memory[i_layer].size() != 0)
-      target.draw(vertex_buffers[i_layer], states);
+      if (show_layer[i_layer]) target.draw(vertex_buffers[i_layer], states);
+    }
   }
 }
