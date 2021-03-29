@@ -5,7 +5,7 @@
 
 World::World() {
   view_watcher = nullptr;
-  growth_mode = ASYNC_ORDERED;
+  growth_mode = SYNC;
   temperature = 2;
 }
 

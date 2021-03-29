@@ -1,3 +1,4 @@
+#include "cxxopts.hpp"
 #include "simulator.h"
 
 INITIALIZE_EASYLOGGINGPP
@@ -18,6 +19,19 @@ void init_logger() {
 int main(int argc, char** argv) {
   init_logger();
 
+  cxxopts::Options options("datam", "Disconnected-seed aTAM simulator");
+
+  options.add_options()("i,input", "Reads input from stdin")(
+      "f,file", "Reads input from file given as arg",
+      cxxopts::value<std::string>())("h,help", "Print usage");
+
+  auto result = options.parse(argc, argv);
+
+  if (result.count("help")) {
+    std::cout << options.help() << std::endl;
+    exit(0);
+  }
+
   sf::Font default_font;
   // Only trick I found to easily check later on if font was loaded
   sf::Font* font_pointer = nullptr;
@@ -31,7 +45,27 @@ int main(int argc, char** argv) {
   WorldView world_view(world, font_pointer);
 
   Parser parser(world, world_view);
-  parser.load_configuration_file("examples/Collatz_configuration.yml");
+
+  if (result["input"].as<bool>()) {
+    // Reading input from stdin
+    std::string line;
+    std::string configuration_file_content = "";
+    while (std::getline(std::cin, line)) {
+      configuration_file_content += line;
+    }
+    parser.parse_configuration_file_content(configuration_file_content);
+  } else {
+    // Reading input from file
+    try {
+      std::string file_name = result["file"].as<std::string>();
+      parser.load_configuration_file(result["file"].as<std::string>());
+    } catch (cxxopts::option_has_no_value_exception) {
+      LOG(INFO)
+          << "No input was given, call `./datam -i` to stream input through "
+             "stdin or `./datam -f <file_path>` to read input from a file";
+      std::cout << options.help() << std::endl;
+    }
+  }
 
   world.set_view_watcher(&world_view.get_view_watcher());
   world_view.update();

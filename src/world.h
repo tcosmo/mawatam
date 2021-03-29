@@ -165,6 +165,8 @@ struct TileType {
 typedef std::vector<std::pair<sf::Vector2i, const TileType*>> ViewWatcher;
 
 static const size_t NB_GROWTH_MODES = 3;
+static const char* GROWTH_MODES[NB_GROWTH_MODES] = {"ASYNC_ORDERED",
+                                                    "ASYNC_RANDOM", "SYNC"};
 enum GrowthMode {
   ASYNC_ORDERED = 0,  // aTAM style growth where canonical order for tile
                       // attachment is chosen

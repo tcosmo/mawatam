@@ -92,7 +92,8 @@ void Simulator::run() {
           case sf::Keyboard::G:
             world.set_growth_mode(static_cast<GrowthMode>(
                 (world.get_growth_mode() + 1) % NB_GROWTH_MODES));
-            LOG(INFO) << "Changed growth to " << world.get_growth_mode();
+            LOG(INFO) << "Changed growth mode to "
+                      << GROWTH_MODES[world.get_growth_mode()];
             break;
 
           case sf::Keyboard::R:

@@ -45,4 +45,5 @@ install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
 # set(CPACK_PACKAGE_VERSION_MINOR "${visutiles_VERSION_MINOR}")
 # include(CPack)
 
+ADD_CUSTOM_TARGET( example_inputs ALL  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/examples ${CMAKE_BINARY_DIR}/examples )
 ADD_CUSTOM_TARGET( assets ALL  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets )
