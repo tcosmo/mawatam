@@ -51,7 +51,7 @@ void Parser::load_configuration_file(
                       (std::istreambuf_iterator<char>()));
 
   PARSER_LOG(INFO) << "Input file: " << configuration_file_path;
-  parse_configuration_file(content);
+  parse_configuration_file_content(content);
 }
 
 GlueName GlueName::parse(const std::string& repr) {
@@ -283,9 +283,6 @@ void Parser::parse_configuration_file_world_section_configuration(
   Yaml::Node node_tileset_tile_types = root[KW_CONFIGURATION];
   check_section_is_map(node_tileset_tile_types, KW_CONFIGURATION);
 
-  // Maps coordinates to string tile type repr
-  std::map<sf::Vector2i, std::string, CompareSfVector2i> tmp_tile_map_repr;
-
   for (auto it = node_tileset_tile_types.Begin();
        it != node_tileset_tile_types.End(); it++) {
     try {
@@ -313,6 +310,18 @@ void Parser::parse_configuration_file_world_section_configuration(
     }
   }
 
+  int temperature = root[KW_TEMPERATURE].As<int>(2);
+  PARSER_LOG(INFO) << "Growing at temperature " << temperature;
+  world.set_temperature(temperature);
+
+  set_world_tile_types_and_tiles();
+}
+
+void Parser::reset_world_to_initial_configuration() {
+  set_world_tile_types_and_tiles();
+}
+
+void Parser::set_world_tile_types_and_tiles() {
   /* Converting the tile map from pointing to tile types repr to the actual tile
    * type and filling the world initial configuation. */
   std::vector<std::unique_ptr<TileType>> tile_types;
@@ -337,10 +346,7 @@ void Parser::parse_configuration_file_world_section_configuration(
     tiles[coord_and_tile_type_repr.first] = tile_types[loc].get();
   }
 
-  int temperature = root[KW_TEMPERATURE].As<int>(2);
-  PARSER_LOG(INFO) << "Growing at temperature " << temperature;
   world.set_tile_types_and_set_tiles(std::move(tile_types), std::move(tiles));
-  world.set_temperature(temperature);
 }
 
 void Parser::parse_configuration_file_world(Yaml::Node& root) {
@@ -394,7 +400,7 @@ void Parser::parse_configuration_file_view(Yaml::Node& root) {
   view.set_glue_char_color(std::move(glue_char_colors));
 }
 
-void Parser::parse_configuration_file(
+void Parser::parse_configuration_file_content(
     const std::string& p_configuration_file_content) {
   configuration_file_content = p_configuration_file_content;
   PARSER_LOG(INFO) << "Parsing...";

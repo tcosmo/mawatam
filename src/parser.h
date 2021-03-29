@@ -23,12 +23,10 @@ class Parser {
   Parser(World& world, WorldView& view);
 
   void load_configuration_file(const std::string& p_configuration_file_path);
-  void parse_configuration_file(
+  void parse_configuration_file_content(
       const std::string& p_configuration_file_content);
 
-  const std::string& get_configuration_file_content() {
-    return configuration_file_content;
-  }
+  void reset_world_to_initial_configuration();
 
  private:
   std::string configuration_file_path;
@@ -45,8 +43,12 @@ class Parser {
       Yaml::Node& root);
   std::map<std::string, TileType> all_tile_types;
   std::map<char, std::string> all_tile_types_name;
+  // Maps coordinates to string tile type repr
+  std::map<sf::Vector2i, std::string, CompareSfVector2i> tmp_tile_map_repr;
 
   void parse_configuration_file_world_section_configuration(Yaml::Node& root);
+
+  void set_world_tile_types_and_tiles();
 
   World& world;
 

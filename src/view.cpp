@@ -32,13 +32,17 @@ WorldView::WorldView(const World& world) : world(world) {
 
 void WorldView::reset() {
   for (size_t i_layer = 0; i_layer < NB_GRAPHIC_LAYERS; i_layer += 1) {
-    vertex_buffers[i_layer].setPrimitiveType(sf::Quads);
-    vertex_buffers[i_layer].setUsage(sf::VertexBuffer::Usage::Dynamic);
-    vertex_buffers[i_layer].create(INITIAL_CAPACITY);
+    sf::VertexBuffer tmp_buff;
+    tmp_buff.setPrimitiveType(sf::Quads);
+    tmp_buff.setUsage(sf::VertexBuffer::Usage::Dynamic);
+    tmp_buff.create(INITIAL_CAPACITY);
+
+    vertex_buffers[i_layer].update(tmp_buff);
     vertex_buffers_capacity[i_layer] = INITIAL_CAPACITY;
     vertex_counts[i_layer] = 0;
     vertex_memory[i_layer].clear();
   }
+  view_watcher.clear();
 }
 
 void WorldView::set_glue_alphabet_colors(

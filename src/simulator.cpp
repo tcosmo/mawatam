@@ -101,9 +101,10 @@ void Simulator::run() {
             break;
 
           case sf::Keyboard::R:
-            // world.reset();
-            // world_view.reset();
-            // world_view.update();
+            LOG(INFO) << "World reset";
+            world_view.reset();
+            parser.reset_world_to_initial_configuration();
+            world_view.update();
             break;
 
           case sf::Keyboard::Escape:

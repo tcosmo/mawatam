@@ -14,6 +14,7 @@ void World::set_tile_types_and_set_tiles(
     std::map<sf::Vector2i, const TileType*, CompareSfVector2i> p_tiles) {
   tile_types = std::move(p_tile_types);
   tile_types_in_tileset.clear();
+
   // Have to use this->tile_types because of move
   for (const auto& tile_ptr : this->tile_types) {
     if (!tile_ptr.get()->is_anonymous()) {
@@ -21,6 +22,13 @@ void World::set_tile_types_and_set_tiles(
     }
   }
   tiles = std::move(p_tiles);
+  if (view_watcher)
+    for (const auto& pos_and_tile : tiles) {
+      view_watcher->push_back(pos_and_tile);
+      DEBUG_WORLD_LOG << "Adding " << pos_and_tile.first << ": "
+                      << *pos_and_tile.second << " to configuration";
+    }
+
   init_potential_tiles_pos();
 }
 
@@ -37,6 +45,7 @@ void World::set_view_watcher(ViewWatcher* watcher) {
 }
 
 void World::init_potential_tiles_pos() {
+  potential_tiles_pos.clear();
   for (const auto& pos_and_square : tiles) {
     add_tile_neighbors_as_potential_tile_pos(pos_and_square.first);
   }

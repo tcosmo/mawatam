@@ -29,6 +29,7 @@
 #endif
 
 // Add %datetime{%Y-%M-%a %H:%M} if you want the date
+// Add %fbase:%line for file name and line
 #define LOGGER_CONF      \
   "*GLOBAL:\n FORMAT = " \
-  "%level %fbase:%line [%logger] %msg"
+  "%level [%logger] %msg"
