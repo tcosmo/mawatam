@@ -411,6 +411,9 @@ void Parser::parse_configuration_file_view(Yaml::Node& root) {
 void Parser::parse_configuration_file_content(
     const std::string& p_configuration_file_content) {
   configuration_file_content = p_configuration_file_content;
+
+  DEBUG_PARSER_LOG << "File content: \n\n" << configuration_file_content;
+
   PARSER_LOG(INFO) << "Parsing...";
 
   Yaml::Node root;

@@ -65,6 +65,8 @@ void WorldView::reset() {
     tmp_buff.setUsage(sf::VertexBuffer::Usage::Dynamic);
     tmp_buff.create(INITIAL_CAPACITY);
 
+    vertex_buffers[i_layer].create(0);
+    vertex_buffers[i_layer].create(INITIAL_CAPACITY);
     vertex_buffers[i_layer].update(tmp_buff);
     vertex_buffers_capacity[i_layer] = INITIAL_CAPACITY;
     vertex_counts[i_layer] = 0;
@@ -257,6 +259,8 @@ std::vector<sf::Vertex> WorldView::vertices_for_layer_and_tile(
       break;
 
     case LAYER_EDGES_COLOR_PER_ALPHABET:
+      // This layer is bugging on big configurations, let's ignore it for now
+      return no_vertices;
       if (!pos_and_tile.second) return no_vertices;
       return get_edges_vertices(pos_and_tile.first, *pos_and_tile.second, true);
 
@@ -370,7 +374,8 @@ void WorldView::draw(sf::RenderTarget& target, sf::RenderStates states) const {
         if (camera_zoom < LOD_TEXT_THRESHOLD) continue;
       }
 
-      if (show_layer[i_layer]) target.draw(vertex_buffers[i_layer], states);
+      if (show_layer[i_layer] || i_layer == LAYER_EDGES_COLOR_PER_CHAR)
+        target.draw(vertex_buffers[i_layer], states);
     }
   }
 }

@@ -1,6 +1,14 @@
 {
   "editor.formatOnPaste": false,
   "editor.formatOnType": false,
+
+  "[cpp]": {
+    "editor.tabSize": 2
+  },
+  "[python]": {
+    "editor.tabSize": 4
+  },
+
   "files.associations": {
     "array": "cpp",
     "atomic": "cpp",
@@ -69,5 +77,6 @@
     "forward_list": "cpp",
     "regex": "cpp",
     "shared_mutex": "cpp"
-  }
+  },
+  "python.formatting.provider": "black"
 }

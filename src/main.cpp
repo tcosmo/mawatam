@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
     std::string line;
     std::string configuration_file_content = "";
     while (std::getline(std::cin, line)) {
-      configuration_file_content += line;
+      configuration_file_content += line + "\n";
     }
     parser.parse_configuration_file_content(configuration_file_content);
   } else {
