@@ -65,8 +65,10 @@ void WorldView::reset() {
     tmp_buff.setUsage(sf::VertexBuffer::Usage::Dynamic);
     tmp_buff.create(INITIAL_CAPACITY);
 
-    vertex_buffers[i_layer].create(0);
-    vertex_buffers[i_layer].create(INITIAL_CAPACITY);
+    /* TODO: figure what should be done. If the following is un commented, bug
+     * for small config, if it commented bug for large ones... */
+    // vertex_buffers[i_layer].create(0);
+    // vertex_buffers[i_layer].create(INITIAL_CAPACITY);
     vertex_buffers[i_layer].update(tmp_buff);
     vertex_buffers_capacity[i_layer] = INITIAL_CAPACITY;
     vertex_counts[i_layer] = 0;
