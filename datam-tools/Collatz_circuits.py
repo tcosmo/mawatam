@@ -54,13 +54,55 @@ def bridge_type_2(with_input=None, variant=0):
 
     # input
     if with_input is not None:
-        conf.add_tile((-1, 0)).south(f"bin.{with_input[0]}").north(
-            f"bin.{with_input[0]}"
-        )
-        conf.add_tile(C(1, -2)).east(f"ter.{with_input[1]}").west(
-            f"ter.{with_input[1]}"
-        )
+        if with_input[0] is not None:
+            conf.add_tile((-1, 0)).south(f"bin.{with_input[0]}").north(
+                f"bin.{with_input[0]}"
+            )
+        if with_input[1] is not None:
+            conf.add_tile(C(1, -2)).east(f"ter.{with_input[1]}").west(
+                f"ter.{with_input[1]}"
+            )
 
+    return conf
+
+
+def two_bridges_type_2(with_input=None, variant1=0, variant2=0):
+
+    if len(with_input) != 3:
+        print("Need three input for the two bridges configuration", file=sys.stderr)
+        exit(-1)
+
+    conf = datam.Configuration(datam.CollatzTileset)
+    conf.add_sub_conf(bridge_type_2(with_input[:2], variant1))
+    bottom_left = conf.bottom_left()
+    conf.add_sub_conf(
+        bridge_type_2((with_input[2], None), variant2).translate(
+            bottom_left + NORTH * 3 + WEST * 1
+        )
+    )
+    conf.add_glue(bottom_left).north("bin.0")
+    return conf
+
+
+def two_bridges_type_2_tighter_gap(with_input=None, variant1=0, variant2=0):
+
+    if len(with_input) != 3:
+        print("Need three input for the two bridges configuration", file=sys.stderr)
+        exit(-1)
+
+    conf = datam.Configuration(datam.CollatzTileset)
+    conf.add_sub_conf(bridge_type_2(with_input[:2], variant1))
+    bottom_left = conf.bottom_left()
+
+    conf.add_sub_conf(
+        bridge_type_2((with_input[2], None), variant2).translate(
+            bottom_left + NORTH * 3
+        )
+    )
+    conf.delete_tile(bottom_left)
+    conf.add_glue(bottom_left + EAST).north("bin.1")
+    conf.delete_tile(conf.bottom_left())
+    conf.add_glue(conf.bottom_left()).north("bin.1")
     return conf
 
 
@@ -113,6 +155,17 @@ def bridge_type_1(with_input=None, variant=0):
     return conf
 
 
+def Collatz_tileset():
+    conf = datam.Configuration(datam.CollatzTileset)
+    conf.add_tile((0, 0), "0")
+    conf.add_tile((2, 0), "1")
+    conf.add_tile((4, 0), "2")
+    conf.add_tile((0, -2), "3")
+    conf.add_tile((2, -2), "4")
+    conf.add_tile((4, -2), "5")
+    return conf
+
+
 def input_bridge_type_1(in_, variant=0):
     variant = int(variant)
     return bridge_type_1(in_, variant)
@@ -121,6 +174,18 @@ def input_bridge_type_1(in_, variant=0):
 def input_bridge_type_2(in_, variant=0):
     variant = int(variant)
     return bridge_type_2(in_, variant)
+
+
+def input_two_bridges_type_2(in_, variant1=0, variant2=0):
+    variant1 = int(variant1)
+    variant2 = int(variant2)
+    return two_bridges_type_2(in_, int(variant1), int(variant2))
+
+
+def input_two_bridges_type_2_tighter_gap(in_, variant1=0, variant2=0):
+    variant1 = int(variant1)
+    variant2 = int(variant2)
+    return two_bridges_type_2_tighter_gap(in_, int(variant1), int(variant2))
 
 
 if __name__ == "__main__":

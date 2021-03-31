@@ -51,6 +51,15 @@ def or_gate(with_input=None):
     return conf
 
 
+def Four_tileset():
+    conf = datam.Configuration(datam.DamienTileset)
+    conf.add_tile((0, 0), "A")
+    conf.add_tile((2, 0), "B")
+    conf.add_tile((0, -2), "C")
+    conf.add_tile((2, -2), "D")
+    return conf
+
+
 def input_or_gate(in_):
     return or_gate(in_)
 

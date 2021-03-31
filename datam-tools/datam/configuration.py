@@ -15,6 +15,21 @@ class Configuration(object):
         self.last_tile_pos = position
         return self
 
+    def delete_tile(self, position):
+        if not isinstance(position, C):
+            position = C(position)
+        if position in self.tiles:
+            del self.tiles[position]
+        return self
+
+    def add_glue(self, position):
+        if not isinstance(position, C):
+            position = C(position)
+        self.last_tile_pos = position
+        if position not in self.tiles:
+            self.tiles[position] = [None, None, None, None]
+        return self
+
     def north(self, glue):
         if self.last_tile_pos is None:
             return
