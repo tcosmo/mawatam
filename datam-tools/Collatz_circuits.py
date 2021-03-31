@@ -66,6 +66,7 @@ def bridge_type_2(with_input=None, variant=0):
     return conf
 
 
+# python3 datam-tools/Collatz_circuits.py input_two_bridges_type_2 110 0 0 | ./datam -i
 def two_bridges_type_2(with_input=None, variant1=0, variant2=0):
 
     if len(with_input) != 3:
@@ -84,6 +85,7 @@ def two_bridges_type_2(with_input=None, variant1=0, variant2=0):
     return conf
 
 
+# python3 datam-tools/Collatz_circuits.py input_two_bridges_type_2_tighter_gap 110 0 0 | ./datam -i
 def two_bridges_type_2_tighter_gap(with_input=None, variant1=0, variant2=0):
 
     if len(with_input) != 3:
@@ -153,6 +155,75 @@ def bridge_type_1(with_input=None, variant=0):
         )
 
     return conf
+
+
+# Any gate of the form <prefix_top> x <middle_top> y <right_word> going down
+def x_y_on_top_gate(with_input=None, right_word="", middle_top="", prefix_top=""):
+    conf = datam.Configuration(datam.CollatzTileset)
+
+    total_top_word = prefix_top + " " + middle_top + " "
+
+    curr_in = 1
+    for i in range(len(total_top_word)):
+        c = total_top_word[::-1][i]
+        if c == " ":
+            if with_input is None:
+                continue
+
+            c = with_input[curr_in]
+            curr_in -= 1
+            conf.add_glue((-1 * i, 0)).north(f"bin.{c}")
+
+        conf.add_glue((-1 * i, 0)).south(f"bin.{c}")
+
+    for i in range(len(right_word)):
+        conf.add_tile(C(0, -1 * i) + SOUTH + EAST).west(f"ter.{right_word[i]}")
+
+    return conf
+
+
+def input_x_y_on_top_gate(in_, right_word, middle_top="", prefix_top=""):
+    return x_y_on_top_gate(in_, right_word, middle_top, prefix_top)
+
+
+def input_x_y_on_top_canonical_gate(gate_name, in_):
+
+    nicknames = {
+        "0R": "0111",
+        "AND": "0001",
+        "NOR": "1000",
+        "NAND": "1110",
+        "XOR": "0110",
+        "NXOR": "1001",
+    }
+
+    # All 2x1 boolean gates in a '0'*g[1] + x + "0" + y with g[0] as right word
+    # and g in:
+    canonical_gates = {
+        "0011": ("0", 0),
+        "0110": ("10", 0),
+        "1100": ("110", 0),
+        "1001": ("0120", 0),
+        "0000": ("0", 1),
+        "0001": ("1", 1),
+        "1101": ("000201", 1),
+        "1000": ("1000", 1),
+        "1010": ("1001", 1),
+        "1110": ("1011", 1),
+        "0111": ("00111", 1),
+        "1111": ("00121", 1),
+        "0100": ("000110", 1),
+        "0101": ("012", 2),
+        "0010": ("0000210", 2),
+        "1011": ("0001112", 2),
+    }
+
+    if gate_name in nicknames:
+        gate_name = nicknames[gate_name]
+
+    g = canonical_gates[gate_name]
+
+    return x_y_on_top_gate(in_, g[0], "0", "0" * g[1])
 
 
 def Collatz_tileset():
