@@ -189,7 +189,7 @@ def input_x_y_on_top_gate(in_, right_word, middle_top="", prefix_top=""):
 def input_x_y_on_top_canonical_gate(gate_name, in_):
 
     nicknames = {
-        "0R": "0111",
+        "OR": "0111",
         "AND": "0001",
         "NOR": "1000",
         "NAND": "1110",
@@ -206,7 +206,7 @@ def input_x_y_on_top_canonical_gate(gate_name, in_):
         "1001": ("0120", 0),
         "0000": ("0", 1),
         "0001": ("1", 1),
-        "1101": ("000201", 1),
+        "1101": ("000201", 1),  # can do better with ('1','01',1)
         "1000": ("1000", 1),
         "1010": ("1001", 1),
         "1110": ("1011", 1),

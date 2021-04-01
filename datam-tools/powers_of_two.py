@@ -7,10 +7,10 @@ def build_powers_of_2(size=10):
     size = int(size)
     conf = datam.Configuration(datam.CollatzTileset)
 
-    conf.add_tile(C(1, -1), ["bin.1", None, None, None])
+    conf.add_tile(C(1, -1)).north("bin.1")
     for x in range(size):
-        conf.add_tile(C(0, x), [None, "ter.0", None, None])
-        conf.add_tile(C(x + 2, -1), ["bin.0", None, None, None])
+        conf.add_tile(C(0, x)).east("ter.0")
+        conf.add_tile(C(x + 2, -1)).north("bin.0")
 
     return conf
 

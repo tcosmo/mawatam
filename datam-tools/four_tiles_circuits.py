@@ -25,28 +25,27 @@ def or_gate(with_input=None):
     self_nand_size = 3
     conf.add_sub_conf(self_nand_gate(self_nand_size))
     bottom_left = conf.bottom_left()
-    conf.add_tile(bottom_left + SOUTH + EAST, [None] * 3 + ["bin.1"])
-    conf.add_tile(bottom_left + WEST, [None] * 2 + ["bin.1", None])
-    conf.add_tile(bottom_left + WEST * 2, [None] * 2 + ["bin.1", None])
+    conf.add_tile(bottom_left + SOUTH + EAST).west("bin.1")
+    conf.add_tile(bottom_left + WEST).south("bin.1")
+    conf.add_tile(bottom_left + WEST * 2).south("bin.1")
 
     south_translate = 6
     second_self_nand = self_nand_gate().translate(SOUTH * south_translate)
     conf.add_sub_conf(second_self_nand)
-    conf.add_tile(second_self_nand.bottom_left() + SOUTH + EAST, [None] * 3 + ["bin.1"])
+    conf.add_tile(second_self_nand.bottom_left() + SOUTH + EAST).west("bin.1")
 
     for i in range(5):
         if i < 4:
-            conf.add_tile(bottom_left + WEST + SOUTH * (i + 2), [None] * 3 + ["bin.1"])
+            conf.add_tile(bottom_left + WEST + SOUTH * (i + 2)).west("bin.1")
         else:
-            conf.add_tile(
-                bottom_left + WEST + SOUTH * (i + 2), [None, None, "bin.1", "bin.1"]
+            conf.add_tile(bottom_left + WEST + SOUTH * (i + 2)).south("bin.1").west(
+                "bin.1"
             )
+
     # inputs
     if with_input is not None:
-        conf.add_tile(CENTER, [None, None, None, f"bin.{with_input[0]}"])
-        conf.add_tile(
-            SOUTH * south_translate, [None, None, None, f"bin.{with_input[1]}"]
-        )
+        conf.add_tile(CENTER).west(f"bin.{with_input[0]}")
+        conf.add_tile(SOUTH * south_translate).west(f"bin.{with_input[1]}")
 
     return conf
 
