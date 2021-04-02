@@ -7,6 +7,15 @@
 #include <cstdio>
 
 #include "config.h"
+
+/* Printing Coordinates: needs to be here for clang (before easy loggin++) */
+template <typename T>
+static std::ostream &operator<<(std::ostream &os,
+                                const sf::Vector2<T> &coords) {
+  os << "(" << coords.x << "," << coords.y << ")";
+  return os;
+}
+
 #include "easylogging++/easylogging++.h"
 
 /* Logging */
@@ -80,14 +89,6 @@ static const sf::Vector2f VIEW_SOUTH = sf::Vector2f({0, 1});
 static const sf::Vector2f VIEW_WEST = sf::Vector2f({-1, 0});
 static const sf::Vector2f VIEW_CARDINAL_POINTS[4] = {VIEW_NORTH, VIEW_EAST,
                                                      VIEW_SOUTH, VIEW_WEST};
-
-/* Printing Coordinates */
-template <typename T>
-static std::ostream &operator<<(std::ostream &os,
-                                const sf::Vector2<T> &coords) {
-  os << "(" << coords.x << "," << coords.y << ")";
-  return os;
-}
 
 /* Some geometry helpers */
 
