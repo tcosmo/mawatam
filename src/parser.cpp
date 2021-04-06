@@ -434,3 +434,47 @@ void Parser::parse_configuration_file_content(
   // }
   PARSER_LOG(INFO) << "Parsing successful!";
 }
+
+std::string pos_to_yaml_key(sf::Vector2i pos) {
+  std::stringstream to_return;
+  to_return << pos.x << "," << pos.y;
+  return to_return.str();
+}
+
+void Parser::world_dump() {
+  std::ofstream out_file;
+  out_file.open("out.yml");
+  out_file << world_dumps();
+  out_file.close();
+}
+
+std::string Parser::world_dumps() {
+  std::stringstream to_return;
+  std::string yaml_spacer = "  ";
+  to_return << KW_TEMPERATURE << ": " << world.get_temperature() << "\n\n";
+  to_return << KW_GLUES << ": "
+            << "\n";
+
+  for (const auto& glue : all_glues)
+    if (!(glue.second == NULL_GLUE))
+      to_return << yaml_spacer << glue.second << "\n";
+  to_return << "\n";
+
+  to_return << KW_TILESET_TILE_TYPES << ": "
+            << "\n";
+  for (const auto& tile_type : all_tile_types)
+    if (!tile_type.second.is_anonymous())
+      to_return << yaml_spacer << tile_type.second << "\n";
+  to_return << "\n";
+
+  to_return << KW_CONFIGURATION << ": "
+            << "\n";
+
+  for (const auto& tile : world.get_tiles()) {
+    if (tile.second)
+      to_return << yaml_spacer << pos_to_yaml_key(tile.first) << ": "
+                << tile.second->glues << "\n";
+  }
+  to_return << "\n";
+  return to_return.str();
+}

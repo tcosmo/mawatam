@@ -107,6 +107,10 @@ void Simulator::run() {
             do_draw_debug_grid = !do_draw_debug_grid;
             break;
 
+          case sf::Keyboard::D:
+            parser.world_dump();
+            break;
+
           // Show graphic layers
           case sf::Keyboard::Num0:
           case sf::Keyboard::Numpad0:

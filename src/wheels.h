@@ -70,7 +70,7 @@ static const std::vector<sf::Color> COLOR_WHEEL_3 = {
 
 static const std::vector<sf::Color> COLOR_WHEEL_4 = {sf::Color(230, 198, 147),
                                                      sf::Color(21, 197, 52),
-                                                     sf::Color(157, 4, 69),
+                                                     sf::Color(197, 21, 52),
                                                      com64_02,
                                                      com64_03,
                                                      com64_04,

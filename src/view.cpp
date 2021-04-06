@@ -68,7 +68,7 @@ void WorldView::reset() {
     /* TODO: figure what should be done. If the following is un commented, bug
      * for small config, if it commented bug for large ones... */
     // vertex_buffers[i_layer].create(0);
-    // vertex_buffers[i_layer].create(INITIAL_CAPACITY);
+    vertex_buffers[i_layer].create(INITIAL_CAPACITY);
     vertex_buffers[i_layer].update(tmp_buff);
     vertex_buffers_capacity[i_layer] = INITIAL_CAPACITY;
     vertex_counts[i_layer] = 0;
@@ -179,7 +179,7 @@ std::vector<sf::Vertex> WorldView::get_edges_text(const sf::Vector2i& tile_pos,
     if (to_draw == NULL_GLUE_CHAR) continue;
 
     sf::Vector2f glyph_center =
-        tile_center + VIEW_CARDINAL_POINTS[i_dir] * (GRAPHIC_TILE_SIZE / 2);
+        tile_center + VIEW_CARDINAL_POINTS[i_dir] * (GRAPHIC_TILE_SIZE / 3.0f);
 
     if (pos_used_by_layer[LAYER_EDGES_TEXT].find(glyph_center) !=
         pos_used_by_layer[LAYER_EDGES_TEXT].end()) {

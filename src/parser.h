@@ -28,6 +28,9 @@ class Parser {
 
   void reset_world_to_initial_configuration();
 
+  std::string world_dumps();
+  void world_dump();
+
  private:
   std::string configuration_file_path;
   std::string configuration_file_content;
@@ -53,5 +56,6 @@ class Parser {
   World& world;
 
   void parse_configuration_file_view(Yaml::Node& root);
+
   WorldView& view;
 };

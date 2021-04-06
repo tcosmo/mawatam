@@ -197,6 +197,7 @@ class World {
   }
 
   void set_temperature(int p_temperature) { temperature = p_temperature; }
+  int get_temperature() { return temperature; }
 
   void next();
 
