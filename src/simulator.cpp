@@ -109,6 +109,7 @@ void Simulator::run() {
 
           case sf::Keyboard::D:
             parser.world_dump();
+            LOG(INFO) << "Current configuration was dumped in file `out.yml`";
             break;
 
           // Show graphic layers

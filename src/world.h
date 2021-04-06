@@ -104,8 +104,10 @@ struct SquareGlues {
   bool operator<(const SquareGlues& other) const { return glues < other.glues; }
 
   std::string __str__() const {
-    return "[" + glues[0].__str__() + ", " + glues[1].__str__() + ", " +
-           glues[2].__str__() + ", " + glues[3].__str__() + "]";
+    // We omit glue strength in this rep
+    return "[" + glues[0].name.__str__() + ", " + glues[1].name.__str__() +
+           ", " + glues[2].name.__str__() + ", " + glues[3].name.__str__() +
+           "]";
   }
 
   friend std::ostream& operator<<(std::ostream& os, SquareGlues const& m) {
