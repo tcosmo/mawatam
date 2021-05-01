@@ -5,6 +5,14 @@ sf::Vector2f world_pos_to_screen_pos(const sf::Vector2i& pos) {
           ((float)GRAPHIC_TILE_SIZE) * (-1 * ((float)pos.y))};
 }
 
+sf::Vector2i screen_pos_to_world_pos(const sf::Vector2f& coords) {
+  int sign_x = (coords.x >= 0) ? 1 : -1;
+  int sign_y = (coords.y >= 0) ? -1 : 1;
+  int x = (coords.x + sign_x * GRAPHIC_TILE_SIZE / 2) / GRAPHIC_TILE_SIZE;
+  int y = (-1 * coords.y + sign_y * GRAPHIC_TILE_SIZE / 2) / GRAPHIC_TILE_SIZE;
+  return {x, y};
+}
+
 std::vector<sf::Vertex> get_filled_centered_square_vertices(
     const sf::Vector2f& center, const sf::Color& fill_color, const float size,
     const float transparent_stroke_thick) {

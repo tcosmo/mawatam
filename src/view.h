@@ -40,6 +40,7 @@ const static size_t LAYER_TILES_TEXT = 6;
 const static float LOD_TEXT_THRESHOLD = 0.28;
 
 sf::Vector2f world_pos_to_screen_pos(const sf::Vector2i& pos);
+sf::Vector2i screen_pos_to_world_pos(const sf::Vector2f& coords);
 
 class WorldView : public sf::Drawable, public sf::Transformable {
  public:

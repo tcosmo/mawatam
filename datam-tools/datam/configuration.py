@@ -56,7 +56,14 @@ class Configuration(object):
 
     def add_sub_conf(self, sub_conf):
         for position in sub_conf.tiles:
-            self.tiles[position] = sub_conf.tiles[position][:]
+            if not position in self.tiles:
+                self.tiles[position] = sub_conf.tiles[position]
+                continue
+
+            for i in range(len(sub_conf.tiles[position])):
+                if self.tiles[position][i] is not None:
+                    continue
+                self.tiles[position][i] = sub_conf.tiles[position][i]
         return self
 
     # Return a translated version of the configuration

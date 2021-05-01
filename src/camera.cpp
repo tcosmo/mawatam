@@ -86,10 +86,21 @@ void Simulator::handle_camera_events(const sf::Event& event) {
 
   // Moving around by dragging the world with mouse wheel button
   if (event.type == sf::Event::MouseButtonPressed)
-    if ((event.mouseButton.button == sf::Mouse::Middle)) {
-      camera_params.drag_move_mode = true;
-      camera_params.mouse_position = sf::Mouse::getPosition(window);
+
+    if ((event.mouseButton.button == sf::Mouse::Left)) {
+      // LOG(INFO) << sf::Mouse::getPosition(window);
+      // LOG(INFO) << window.mapPixelToCoords(sf::Mouse::getPosition(window));
+      // LOG(INFO) << window.mapPixelToCoords(sf::Mouse::getPosition(window));
+      // LOG(INFO) << window.mapPixelToCoords(sf::Mouse::getPosition(window));
+      LOG(INFO) << "Position clicked: "
+                << screen_pos_to_world_pos(
+                       window.mapPixelToCoords(sf::Mouse::getPosition(window)));
     }
+
+  if ((event.mouseButton.button == sf::Mouse::Middle)) {
+    camera_params.drag_move_mode = true;
+    camera_params.mouse_position = sf::Mouse::getPosition(window);
+  }
 
   if (event.type == sf::Event::MouseMoved) {
     if (camera_params.drag_move_mode) {
