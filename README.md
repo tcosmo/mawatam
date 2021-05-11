@@ -19,6 +19,18 @@ cmake ..
 make
 ```
 
+## Run
+
+The simulator can either be run from a `.yml` input file (see input format below):
+
+```bash
+./datam -f examples/powers_of_two.yml
+```
+
+Or reading from `stdin`, in the same format:
+
+`python3 mawatam-tools/four_tiles_circuits.py prime_circuit 110  | ./mawatam -i`
+
 ## Examples
 
 You can simulate the constructions presented in the paper by running the following commands:
