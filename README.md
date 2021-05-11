@@ -29,7 +29,11 @@ The simulator can either be run from a `.yml` input file (see input format below
 
 Or reading from `stdin`, in the same format:
 
-`python3 mawatam-tools/four_tiles_circuits.py prime_circuit 110  | ./mawatam -i`
+```bash
+python3 mawatam-tools/four_tiles_circuits.py prime_circuit 110  | ./mawatam -i
+```
+
+**Note:** The Maze-Walking aTAM model is defined in an asynchronous way. Although for convenience and because it did not change terminal assemblies in the case of the construction we considered, the default growth mode of the simulator is synchronous. This can be changed by pressing `G` (see controls below).
 
 ## Examples
 
