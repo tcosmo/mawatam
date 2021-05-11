@@ -47,7 +47,7 @@ You can simulate the constructions presented in the paper by running the followi
 
 - `python3 mawatam-tools/Collatz_circuits.py prime_circuit_better 111 | ./mawatam -i`
 - `python3 mawatam-tools/Collatz_circuits.py bridge_type_2_in_context 11 | ./mawatam -i`
-- - `python3 mawatam-tools/Collatz_circuits.py input_x_y_on_east_canonical_gate NAND | ./mawatam -i`
+- `python3 mawatam-tools/Collatz_circuits.py input_x_y_on_east_canonical_gate NAND | ./mawatam -i`
 - `python3 mawatam-tools/Collatz_circuits.py input_x_y_on_east_canonical_gate NAND 01 | ./mawatam -i`
 - `python3 mawatam-tools/Collatz_forward.py Collatz_forward 1001011 | ./mawatam -i`
 - `python3 mawatam-tools/powers_of_two.py 100 | ./mawatam -i`
