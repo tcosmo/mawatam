@@ -24,7 +24,7 @@ make
 The simulator can either be run from a `.yml` input file (see input format below):
 
 ```bash
-./datam -f examples/powers_of_two.yml
+./mawatam -f examples/powers_of_two.yml
 ```
 
 Or reading from `stdin`, in the same format:
