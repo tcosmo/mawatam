@@ -1,6 +1,7 @@
-# datam
+# MaWaTAM
 
-`datam` is a simulator for the datam. It is written in C++ and uses the SFML as graphic library.
+`mawatam` is a simulator for the Maze-Walking aTAM, a model introduced in the paper `Small tile sets that compute while solving mazes
+` by M. Cook, T. Stérin and D. Woods. It is written in C++ and uses the SFML as graphic library.
 
 ## Dependencies
 
@@ -12,25 +13,57 @@ On Debian/Ubuntu, you can install SFML with: `sudo apt install libsfml-dev`, ple
 
 ```bash
 git clone
-cd datam
+cd mawatam
 mkdir build
 cmake ..
 make
-./datam -f examples/powers_of_two.yml
 ```
 
 ## Run
 
-You can either run the simulator from an input file:
-```bash
-./datam -f examples/powers_of_two.yml
-```
-
-Or stream your input though `stdin` which is useful if, let's say, you use a script to generate your initial configuration for you:
+The simulator can either be run from a `.yml` input file (see input format below):
 
 ```bash
-./datam -i
+./mawatam -f examples/powers_of_two.yml
 ```
+
+Or reading from `stdin`, in the same format:
+
+```bash
+python3 mawatam-tools/four_tiles_circuits.py prime_circuit 110  | ./mawatam -i
+```
+
+**Note:** The Maze-Walking aTAM model is defined in an **asynchronous** way. However, for convenience and because it did not change terminal assemblies in the case of the constructions we considered in the paper, the default growth mode of the simulator is **synchronous**. This can be changed by pressing `G` (see controls below).
+
+## Examples
+
+You can simulate the constructions presented in the paper by running the following commands:
+
+### NAND-NXOR tile set
+
+- `python3 mawatam-tools/four_tiles_circuits.py prime_circuit 110  | ./mawatam -i`
+- `python3 mawatam-tools/four_tiles_circuits.py crossover 01  | ./mawatam -i`
+
+### Collatz tile set
+
+- `python3 mawatam-tools/Collatz_circuits.py prime_circuit_better 111  | ./mawatam -i`
+- `python3 mawatam-tools/Collatz_circuits.py bridge_type_2_in_context 11 | ./mawatam -i`
+- `python3 mawatam-tools/Collatz_circuits.py input_x_y_on_east_canonical_gate NAND  | ./mawatam -i`
+- `python3 mawatam-tools/Collatz_forward.py Collatz_forward 1001011 | ./mawatam -i`
+- `python3 mawatam-tools/powers_of_two.py 100 | ./mawatam -i`
+
+## Controls
+
+- `N`: next simulation step
+- `R`: reset simulation
+- `arrows`: translate the scene
+- `mouse wheel pressed`: translate the scene
+- `CTRL + mouse wheel down/up`: zoom in/out
+- `+ / -`: zoom in/out
+- `G`: change growth mode between asynchronous ordered, asynchronous random, synchronous
+- `A`: prints information about the simulation and scene in the terminal
+- `D`: dumps the current configuration in `out.yml` file
+
 
 ## Input format
 
