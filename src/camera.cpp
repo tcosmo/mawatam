@@ -64,10 +64,12 @@ void Simulator::handle_camera_events(const sf::Event& event) {
                          camera_params.default_trans_vec);
         break;
 
+      case sf::Keyboard::Equal:
       case sf::Keyboard::Add:
         camera_zoom(camera_params.default_zoom_step);
         break;
 
+      case sf::Keyboard::Dash:
       case sf::Keyboard::Subtract:
         camera_zoom(1.0 / camera_params.default_zoom_step);
         break;

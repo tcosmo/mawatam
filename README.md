@@ -1,7 +1,6 @@
 # MaWaTAM
 
-`mawatam` is a simulator for the Maze-Walking aTAM, a model introduced in the paper `Small tile sets that compute while solving mazes
-` by M. Cook, T. Stérin and D. Woods. It is written in C++ and uses the SFML as graphic library.
+`mawatam` is a simulator for the Maze-Walking aTAM, a model introduced in the paper `Small tile sets that compute while solving mazes ` by M. Cook, T. Stérin and D. Woods. It is written in C++ and uses the SFML as graphic library.
 
 ## Dependencies
 
@@ -41,14 +40,14 @@ You can simulate the constructions presented in the paper by running the followi
 
 ### NAND-NXOR tile set
 
-- `python3 mawatam-tools/four_tiles_circuits.py prime_circuit 110  | ./mawatam -i`
-- `python3 mawatam-tools/four_tiles_circuits.py crossover 01  | ./mawatam -i`
+- `python3 mawatam-tools/four_tiles_circuits.py prime_circuit 110 | ./mawatam -i`
+- `python3 mawatam-tools/four_tiles_circuits.py crossover 01 | ./mawatam -i`
 
 ### Collatz tile set
 
-- `python3 mawatam-tools/Collatz_circuits.py prime_circuit_better 111  | ./mawatam -i`
+- `python3 mawatam-tools/Collatz_circuits.py prime_circuit_better 111 | ./mawatam -i`
 - `python3 mawatam-tools/Collatz_circuits.py bridge_type_2_in_context 11 | ./mawatam -i`
-- `python3 mawatam-tools/Collatz_circuits.py input_x_y_on_east_canonical_gate NAND  | ./mawatam -i`
+- `python3 mawatam-tools/Collatz_circuits.py input_x_y_on_east_canonical_gate NAND | ./mawatam -i`
 - `python3 mawatam-tools/Collatz_forward.py Collatz_forward 1001011 | ./mawatam -i`
 - `python3 mawatam-tools/powers_of_two.py 100 | ./mawatam -i`
 
@@ -59,15 +58,15 @@ You can simulate the constructions presented in the paper by running the followi
 - `arrows`: translate the scene
 - `mouse wheel pressed`: translate the scene
 - `CTRL + mouse wheel down/up`: zoom in/out
-- `+ / -`: zoom in/out
+- `Numpad + / Numpad -`: zoom in/out
+- `= / -`: zoom in/out
 - `G`: change growth mode between asynchronous ordered, asynchronous random, synchronous
 - `A`: prints information about the simulation and scene in the terminal
 - `D`: dumps the current configuration in `out.yml` file
 
-
 ## Input format
 
-The input format is built on `yaml`. 
+The input format is built on `yaml`.
 
 ```yaml
 # This input configuration constructs powers of two in base 3
