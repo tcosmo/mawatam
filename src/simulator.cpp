@@ -3,7 +3,7 @@
 Simulator::Simulator(Parser& parser, World& world, WorldView& world_view,
                      int screen_w, int screen_h)
     : parser(parser), world(world), world_view(world_view) {
-  window.create(sf::VideoMode(screen_w, screen_h), datam_PROG_NAME);
+  window.create(sf::VideoMode(screen_w, screen_h), mawatam_PROG_NAME);
   //window.setPosition(sf::Vector2i(461, 1636));
   window.setFramerateLimit(TARGET_FPS);
   // window.setVerticalSyncEnabled(true);

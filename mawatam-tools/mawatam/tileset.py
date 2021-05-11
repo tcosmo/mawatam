@@ -1,4 +1,4 @@
-from datam import yaml_spacer, format_square_glues
+from mawatam import yaml_spacer, format_square_glues
 import copy
 
 

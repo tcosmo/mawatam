@@ -1,17 +1,17 @@
 // clang-format off
-#define datam_VERSION_MAJOR @datam_VERSION_MAJOR@
-#define datam_VERSION_MINOR @datam_VERSION_MINOR@
-#define datam_VERSION_PATCH @datam_VERSION_PATCH@
+#define mawatam_VERSION_MAJOR @mawatam_VERSION_MAJOR@
+#define mawatam_VERSION_MINOR @mawatam_VERSION_MINOR@
+#define mawatam_VERSION_PATCH @mawatam_VERSION_PATCH@
 // clang-format on
 
 #define STRINGIFY2(X) #X
 #define STRINGIFY(X) STRINGIFY2(X)
 #define VERSION                  \
-  STRINGIFY(datam_VERSION_MAJOR) \
-  "." STRINGIFY(datam_VERSION_MINOR) "." STRINGIFY(datam_VERSION_PATCH)
+  STRINGIFY(mawatam_VERSION_MAJOR) \
+  "." STRINGIFY(mawatam_VERSION_MINOR) "." STRINGIFY(mawatam_VERSION_PATCH)
 
-#define datam_PROG_NAME "@datam_PROG_NAME@"
-#define datam_PROG_NAME_EXEC "@datam_PROG_NAME_EXEC@"
+#define mawatam_PROG_NAME "@mawatam_PROG_NAME@"
+#define mawatam_PROG_NAME_EXEC "@mawatam_PROG_NAME_EXEC@"
 #define TARGET_FPS 30
 
 #define VERTEX_BUFFER_MAX_SIZE 1000000

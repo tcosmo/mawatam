@@ -1,11 +1,11 @@
 import sys
-import datam
-from datam import C, CENTER, NORTH, EAST, SOUTH, WEST
+import mawatam
+from mawatam import C, CENTER, NORTH, EAST, SOUTH, WEST
 
 
 def top_binary_and_instr(top_bin, instr):
 
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
     curr_pos = C(0, 0)
 
     for c in top_bin[::-1]:
@@ -25,7 +25,7 @@ def top_binary_and_instr(top_bin, instr):
 
 
 def frontierr(in_, repeat=70):
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
 
     curr_pos = C(0, 0)
 
@@ -47,7 +47,7 @@ def frontierr(in_, repeat=70):
 
 
 def frontier(in_):
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
 
     curr_pos = C(0, 0)
 
@@ -68,7 +68,7 @@ def frontier(in_):
 
 
 def base6_diagonal(in_):
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
     pos = C(0, 0)
 
     for i, c in enumerate(in_[::-1]):
@@ -78,7 +78,7 @@ def base6_diagonal(in_):
 
 
 def base6_anti_diagonal(in_):
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
     pos = C(0, 0)
 
     for i, c in enumerate(in_):

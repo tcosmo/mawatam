@@ -54,6 +54,6 @@ EAST = C(1, 0)
 SOUTH = C(0, -1)
 WEST = C(-1, 0)
 
-from datam.configuration import Configuration
-from datam.tileset import Tileset
-from datam.tileset_collection import *
+from mawatam.configuration import Configuration
+from mawatam.tileset import Tileset
+from mawatam.tileset_collection import *

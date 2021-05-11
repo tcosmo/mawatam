@@ -1,11 +1,11 @@
 import sys
-import datam
-from datam import C, CENTER, NORTH, EAST, SOUTH, WEST
+import mawatam
+from mawatam import C, CENTER, NORTH, EAST, SOUTH, WEST
 
 
 def build_powers_of_2(size=10):
     size = int(size)
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
 
     conf.add_tile(C(1, -1)).north("bin.1")
     for x in range(size):

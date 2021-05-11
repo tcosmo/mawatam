@@ -1,10 +1,26 @@
 import sys
-import datam
-from datam import C, CENTER, NORTH, EAST, SOUTH, WEST
+import mawatam
+from mawatam import C, CENTER, NORTH, EAST, SOUTH, WEST
+import random
 
+def diago_135(in_word):
+    conf = mawatam.Configuration(mawatam.DamienTileset)
+    curr_pos = CENTER
+
+    for c in in_word:
+        conf.add_tile(curr_pos, c)
+        curr_pos += EAST
+        curr_pos += SOUTH
+
+    return conf
+
+def diago_135_big(size="100"):
+    size = int(size)
+
+    return diago_135(random.choices(["A","B","C","D"], k=size))
 
 def self_nand_gate(size=3):
-    conf = datam.Configuration(datam.DamienTileset)
+    conf = mawatam.Configuration(mawatam.DamienTileset)
     curr_pos = CENTER
 
     for i in range(size):
@@ -20,7 +36,7 @@ def self_nand_gate(size=3):
 
 
 def crossover(with_input=None):
-    conf = datam.Configuration(datam.DamienTileset)
+    conf = mawatam.Configuration(mawatam.DamienTileset)
 
     if with_input is not None:
         conf.add_glue((-1, 0)).west(f"bin.{with_input[0]}")
@@ -49,7 +65,7 @@ def crossover(with_input=None):
 
 
 def prime_circuit(with_input=None):
-    conf = datam.Configuration(datam.DamienTileset)
+    conf = mawatam.Configuration(mawatam.DamienTileset)
 
     if with_input is not None:
         conf.add_glue((0, 0)).west(f"bin.{with_input[0]}")
@@ -85,7 +101,7 @@ def prime_circuit(with_input=None):
 
 
 def or_gate(with_input=None):
-    conf = datam.Configuration(datam.DamienTileset)
+    conf = mawatam.Configuration(mawatam.DamienTileset)
     self_nand_size = 3
     conf.add_sub_conf(self_nand_gate(self_nand_size))
     bottom_left = conf.bottom_left()
@@ -115,7 +131,7 @@ def or_gate(with_input=None):
 
 
 def wires_fan_out_nand(with_input=None):
-    conf = datam.Configuration(datam.DamienTileset)
+    conf = mawatam.Configuration(mawatam.DamienTileset)
 
     # input
     if with_input is not None:
@@ -145,8 +161,20 @@ def wires_fan_out_nand(with_input=None):
     return conf
 
 
+def horizontal_wire(with_input=None, size="4"):
+    size = int(size)
+    conf = mawatam.Configuration(mawatam.DamienTileset)
+
+    for i in range(size):
+        conf.add_glue((-1*i,1)).south("bin.1")
+
+    if with_input is not None:
+        conf.add_glue((1,0)).west(f"bin.{with_input}")
+
+    return conf
+
 def Four_tileset():
-    conf = datam.Configuration(datam.DamienTileset)
+    conf = mawatam.Configuration(mawatam.DamienTileset)
     conf.add_tile((0, 0), "A")
     conf.add_tile((2, 0), "B")
     conf.add_tile((0, -2), "C")

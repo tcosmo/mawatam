@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.13)
-project(datam)
+project(mawatam)
 
-project(datam LANGUAGES CXX)
+project(mawatam LANGUAGES CXX)
 
-set(datam_VERSION_MAJOR 0)
-set(datam_VERSION_MINOR 0)
-set(datam_VERSION_PATCH 1)
-set(datam_PROG_NAME "datam")
-set(datam_PROG_NAME_EXEC "datam")
+set(mawatam_VERSION_MAJOR 0)
+set(mawatam_VERSION_MINOR 0)
+set(mawatam_VERSION_PATCH 2)
+set(mawatam_PROG_NAME "mawatam")
+set(mawatam_PROG_NAME_EXEC "mawatam")
 configure_file(
   "${PROJECT_SOURCE_DIR}/src/config.h.in"
   "${PROJECT_SOURCE_DIR}/src/config.h"
@@ -21,8 +21,8 @@ include_directories("${PROJECT_BINARY_DIR}")
 
 file(GLOB SOURCES "src/*.cpp" "src/yaml/*.cpp" "src/easylogging++/*.cpp" )
 
-set(EXECUTABLE_NAME "datam")
-add_executable(datam ${SOURCES})
+set(EXECUTABLE_NAME "mawatam")
+add_executable(mawatam ${SOURCES})
 
 # Detect and add SFML
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
@@ -47,4 +47,4 @@ install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
 
 ADD_CUSTOM_TARGET( examples ALL  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/examples ${CMAKE_BINARY_DIR}/examples )
 ADD_CUSTOM_TARGET( assets ALL  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets )
-ADD_CUSTOM_TARGET( datam-tools ALL  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/datam-tools ${CMAKE_BINARY_DIR}/datam-tools )
+ADD_CUSTOM_TARGET( mawatam-tools ALL  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/mawatam-tools ${CMAKE_BINARY_DIR}/mawatam-tools )

@@ -1,6 +1,6 @@
 import sys
-import datam
-from datam import C, CENTER, NORTH, EAST, SOUTH, WEST
+import mawatam
+from mawatam import C, CENTER, NORTH, EAST, SOUTH, WEST
 
 
 def bridge_type_2_in_context(with_input=None):
@@ -22,9 +22,8 @@ def bridge_type_2_in_context(with_input=None):
 
     return conf
 
-
 def circuit_from_spec(spec_file, with_input=None):
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
     with open(spec_file, "r") as f:
         spec_content = f.read()
 
@@ -53,7 +52,7 @@ def circuit_from_spec(spec_file, with_input=None):
 
 def circuit_prime_3_bits(with_input=None):
     # (not x and y) or (x and z)
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
 
     if with_input is not None:
         # x
@@ -205,7 +204,7 @@ def circuit_prime_3_bits(with_input=None):
 
 
 def fanout_two_even_pos(with_input=None):
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
     if with_input is not None:
         conf.add_glue((0, 0)).west(f"ter.{with_input[0]}")
     conf.add_glue((-1, -1)).north("bin.1")
@@ -218,7 +217,7 @@ def bridge_type_2_inverter(with_input=None, variant=0, minimal=False):
     bridge_variant = [
         ("000", "021"),
     ]
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
 
     # TOP
     conf.add_glue((0, 0)).south("bin.0")
@@ -285,7 +284,7 @@ def bridge_type_2(with_input=None, variant=0, minimal=False):
         ("111", "210"),
         ("111", "221"),
     ]
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
 
     # TOP
     conf.add_glue((0, 0)).south("bin.0")
@@ -325,14 +324,14 @@ def bridge_type_2(with_input=None, variant=0, minimal=False):
     return conf
 
 
-# python3 datam-tools/Collatz_circuits.py input_two_bridges_type_2 110 0 0 | ./datam -i
+# python3 mawatam-tools/Collatz_circuits.py input_two_bridges_type_2 110 0 0 | ./mawatam -i
 def two_bridges_type_2(with_input=None, variant1=0, variant2=0):
 
     if len(with_input) != 3:
         print("Need three input for the two bridges configuration", file=sys.stderr)
         exit(-1)
 
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
     conf.add_sub_conf(bridge_type_2(with_input[:2], variant1))
     bottom_left = conf.bottom_left()
     conf.add_sub_conf(
@@ -344,14 +343,14 @@ def two_bridges_type_2(with_input=None, variant1=0, variant2=0):
     return conf
 
 
-# python3 datam-tools/Collatz_circuits.py input_two_bridges_type_2_tighter_gap 110 0 0 | ./datam -i
+# python3 mawatam-tools/Collatz_circuits.py input_two_bridges_type_2_tighter_gap 110 0 0 | ./mawatam -i
 def two_bridges_type_2_tighter_gap(with_input=None, variant1=0, variant2=0):
 
     if len(with_input) != 3:
         print("Need three input for the two bridges configuration", file=sys.stderr)
         exit(-1)
 
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
     conf.add_sub_conf(bridge_type_2(with_input[:2], variant1))
     bottom_left = conf.bottom_left()
 
@@ -379,7 +378,7 @@ def bridge_type_1(with_input=None, variant=0):
         ("000", "120"),
         ("001", "010"),
     ]
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
 
     # TOP
     conf.add_tile((0, 0)).south("bin.0")
@@ -418,7 +417,7 @@ def bridge_type_1(with_input=None, variant=0):
 
 # Any gate of the form <prefix_top> x <middle_top> y <right_word> going down
 def x_y_on_top_gate(with_input=None, right_word="", middle_top="", prefix_top=""):
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
 
     total_top_word = prefix_top + " " + middle_top + " "
 
@@ -487,7 +486,7 @@ def input_x_y_on_top_canonical_gate(gate_name, in_=None):
 
 def x_y_on_east_gate(with_input, top, east, middle_east):
 
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
 
     total_east_word = " " + middle_east + " " + east
 
@@ -569,7 +568,7 @@ def input_x_y_on_east_canonical_gate(gate_name, in_=None):
 
 
 def fanout(even=True):
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
     conf.add_glue((0, -1)).west(f"ter.{int(even)}")
     conf.add_glue((-1, 1)).south("bin.1")
     conf.add_glue((-2, 1)).south("bin.0")
@@ -578,7 +577,7 @@ def fanout(even=True):
 
 
 def not_gate(in_=None):
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
     if in_ is not None:
         conf.add_glue((0, 0)).west(f"ter.{in_[0]}")
     conf.add_glue((-1, 1)).south("bin.1")
@@ -587,7 +586,7 @@ def not_gate(in_=None):
 
 
 def prime_circuit_better(in_=None):
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
 
     if in_ is not None:
         conf.add_glue((1, 0)).west(f"ter.{in_[0]}")
@@ -652,7 +651,7 @@ def prime_circuit_better(in_=None):
 
 
 def Collatz_tileset():
-    conf = datam.Configuration(datam.CollatzTileset)
+    conf = mawatam.Configuration(mawatam.CollatzTileset)
     conf.add_tile((0, 0), "0")
     conf.add_tile((2, 0), "1")
     conf.add_tile((4, 0), "2")

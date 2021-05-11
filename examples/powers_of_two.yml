@@ -30,13 +30,6 @@ tileset_tile_types:
 # Or use tile types of the tileset:
 # <x>, <y>: <tile_type_name>
 configuration:
-  -10,0: "0"
-  -8,0: "1"
-  -6,0: "2"
-  -10,-2: "3"
-  -8,-2: "4"
-  -6,-2: "5"
-
   0,0: [null, ter.0, null, null]
   0,1: [null, ter.0, null, null]
   0,2: [null, ter.0, null, null]
