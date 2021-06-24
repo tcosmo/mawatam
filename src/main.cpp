@@ -13,13 +13,13 @@ void init_logger() {
   el::Loggers::getLogger(LOGGER_VIEW);
   el::Loggers::getLogger(LOGGER_WORLD);
   el::Loggers::reconfigureAllLoggers(c);
-  LOG(INFO) << "Welcome to datam!";
+  LOG(INFO) << "Welcome to mawatam!";
 }
 
 int main(int argc, char** argv) {
   init_logger();
 
-  cxxopts::Options options("datam", "Disconnected-seed aTAM simulator");
+  cxxopts::Options options("mawatam", "Disconnected-seed aTAM simulator");
 
   options.add_options()("i,input", "Reads input from stdin")(
       "f,file", "Reads input from file given as arg",
@@ -61,8 +61,8 @@ int main(int argc, char** argv) {
       parser.load_configuration_file(result["file"].as<std::string>());
     } catch (cxxopts::option_has_no_value_exception) {
       LOG(INFO)
-          << "No input was given, call `./datam -i` to stream input through "
-             "stdin or `./datam -f <file_path>` to read input from a file";
+          << "No input was given, call `./mawatam -i` to stream input through "
+             "stdin or `./mawatam -f <file_path>` to read input from a file";
       std::cout << options.help() << std::endl;
     }
   }
