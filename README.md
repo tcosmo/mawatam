@@ -8,6 +8,24 @@ We use the SFML, a powerful graphics, game and media library.
 
 On Debian/Ubuntu, you can install SFML with: `sudo apt install libsfml-dev`, please refer to [this guide](https://www.sfml-dev.org/tutorials/2.5/) for other systems.
 
+### SFML on a Mac with M1 architecture
+
+SFML tutorials about the M1 chip are not there yet, I managed to make it work by compiling from source but a few variables need to be set:
+
+```
+git clone https://github.com/SFML/SFML.git
+cd SFML
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=arm64 ..
+make all
+sudo make install
+```
+
+I also had to go to the `CMakeCache.txt`of SFML and set `SFML_BUILD_FRAMEWORKS` to `TRUE` then `cmake .. && make all && sudo make install`.
+
+For some reasons there are bugs in mawatam for M1, for instance glue labels are not present on seeds. I don't know yet why.
+
 ## Build
 
 ```bash

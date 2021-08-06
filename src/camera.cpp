@@ -71,6 +71,7 @@ void Simulator::handle_camera_events(const sf::Event& event) {
 
       case sf::Keyboard::Dash:
       case sf::Keyboard::Subtract:
+      case sf::Keyboard::U:
         camera_zoom(1.0 / camera_params.default_zoom_step);
         break;
 
