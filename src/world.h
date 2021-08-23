@@ -210,7 +210,7 @@ class World {
  private:
   GrowthMode growth_mode;
 
-  /* In the datam, not all tile types belong to the tileset
+  /* In the mawatam, not all tile types belong to the tileset
      Some are only used to specify the input configuration
      They are "anoymous tile types". The only constraint is that
      They use the same glues as in the tileset or a default null glue of

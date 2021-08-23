@@ -8,6 +8,24 @@ We use the SFML, a powerful graphics, game and media library.
 
 On Debian/Ubuntu, you can install SFML with: `sudo apt install libsfml-dev`, please refer to [this guide](https://www.sfml-dev.org/tutorials/2.5/) for other systems.
 
+### SFML on a Mac with M1 architecture
+
+SFML tutorials about the M1 chip are not there yet, I managed to make it work by compiling from source but a few variables need to be set:
+
+```
+git clone https://github.com/SFML/SFML.git
+cd SFML
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=arm64 ..
+make all
+sudo make install
+```
+
+I also had to go to the `CMakeCache.txt`of SFML and set `SFML_BUILD_FRAMEWORKS` to `TRUE` then `cmake .. && make all && sudo make install`.
+
+For some reasons there are bugs in mawatam for M1, for instance glue labels are not present on seeds. I don't know yet why.
+
 ## Build
 
 ```bash
@@ -48,6 +66,7 @@ You can simulate the constructions presented in the paper by running the followi
 - `python3 mawatam-tools/Collatz_circuits.py prime_circuit_better 111 | ./mawatam -i`
 - `python3 mawatam-tools/Collatz_circuits.py bridge_type_2_in_context 11 | ./mawatam -i`
 - `python3 mawatam-tools/Collatz_circuits.py input_x_y_on_east_canonical_gate NAND | ./mawatam -i`
+- `python3 mawatam-tools/Collatz_circuits.py input_x_y_on_east_canonical_gate NAND 01 | ./mawatam -i`
 - `python3 mawatam-tools/Collatz_forward.py Collatz_forward 1001011 | ./mawatam -i`
 - `python3 mawatam-tools/powers_of_two.py 100 | ./mawatam -i`
 
