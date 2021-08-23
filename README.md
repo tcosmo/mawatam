@@ -1,6 +1,6 @@
 # MaWaTAM
 
-`mawatam` is a simulator for the Maze-Walking aTAM, a model introduced in the paper `Small tile sets that compute while solving mazes ` by M. Cook, T. Stérin and D. Woods. It is written in C++ and uses the SFML as graphic library.
+`mawatam` is a simulator for the Maze-Walking Tile Assembly Model, a model introduced in the paper [Small tile sets that compute while solving mazes](https://arxiv.org/abs/2106.12341) by M. Cook, T. Stérin and D. Woods. It is written in C++ and uses the SFML as graphic library.
 
 ## Dependencies
 
