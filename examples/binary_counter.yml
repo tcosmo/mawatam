@@ -1,0 +1,96 @@
+# This input configuration constructs powers of two in base 3
+
+# The format for specifying glues is:
+# <glue_alphabet_name>.<glue_name>: <glue_strength>
+# The alphabet name must comply with [_a-zA-Z][_a-zA-Z0-9]*
+# The glue name must comply with [a-zA-Z0-9]
+# Hence, the complete glue name must match [_a-zA-Z][_a-zA-Z0-9]*\\.[a-zA-Z0-9]
+glues:
+  g.R: 2
+  g.B: 2
+  g.0: 1
+  g.1: 1
+
+temperature: 2
+
+# The format for specifying tile types is:
+# <tile_type_name>: [<glue_north_name>, <glue_east_name>, <glue_south_name>, <glue_west_name>]
+# The tile type name must comply with [a-zA-Z0-9]
+tileset_tile_types:
+  R: [g.R, null, g.R, g.1]
+  S: [g.R, null, null, g.B]
+  B: [g.0, g.B, null, g.B]
+  0: [g.0, g.0, g.0, g.0]
+  1: [g.1, g.0, g.1, g.0]
+  o: [g.0, g.1, g.1, g.1]
+  l: [g.1, g.1, g.0, g.0]
+
+# When you specify a configuration, you can either use anonymous tile types that wont be registered in the tileset:
+# <x>,<y>: [<glue_north_name>, <glue_east_name>, <glue_south_name>, <glue_west_name>]
+# Or use tile types of the tileset:
+# <x>, <y>: <tile_type_name>
+configuration:
+  0,0: S
+#Displaying the tileset and avoiding it to grow:
+  12,0: R
+  14,0: S
+  16,0: B
+  12,-2: 0
+  14,-2: 1
+  16,-2: o
+  18,-2: l
+  11,1: [null,null,null,null]
+  12,1: [null,null,null,null]
+  13,1: [null,null,null,null]
+  14,1: [null,null,null,null]
+  15,1: [null,null,null,null]
+  16,1: [null,null,null,null]
+  17,1: [null,null,null,null]
+  18,1: [null,null,null,null]
+  19,1: [null,null,null,null]
+  11,0: [null,null,null,null]
+  11,-1: [null,null,null,null]
+  11,-2: [null,null,null,null]
+  11,-3: [null,null,null,null]
+  12,-3: [null,null,null,null]
+  13,-3: [null,null,null,null]
+  14,-3: [null,null,null,null]
+  15,-3: [null,null,null,null]
+  16,-3: [null,null,null,null]
+  17,-3: [null,null,null,null]
+  18,-3: [null,null,null,null]
+  19,-3: [null,null,null,null]
+  19,-2: [null,null,null,null]
+  19,-1: [null,null,null,null]
+  19,0: [null,null,null,null]
+  13,0: [null,null,null,null]
+  15,0: [null,null,null,null]
+  17,0: [null,null,null,null]
+  18,0: [null,null,null,null]
+  12,-1: [null,null,null,null]
+  13,-1: [null,null,null,null]
+  14,-1: [null,null,null,null]
+  15,-1: [null,null,null,null]
+  16,-1: [null,null,null,null]
+  17,-1: [null,null,null,null]
+  18,-1: [null,null,null,null]
+  13,-2: [null,null,null,null]
+  17,-2: [null,null,null,null]
+  
+
+  15,-2: [null,null,null,null]
+  
+  
+# The two following entries are not implem yet
+
+# You can specify the color with which the simulator will render
+# glues that use a given alphabet name:
+# <glue_alphabet_name>: #hexcolor or `auto` to let the simulator choose
+# By default it is set to auto
+glue_alphabets_color:
+  bin: auto
+  ter: auto
+
+# The view will either display glue colors given their
+# alphabet name or glue char can be toggled by pressing `e`
+default_glue_color_mode: alphabet

@@ -16,10 +16,15 @@ const static int COLOR_TRANSPARENCY_EDGE = 200;
 const static int COLOR_TRANSPARENCY_TILE_COLOR = 170;
 
 const static sf::Color COLOR_POTENTIAL_TILE = sf::Color(0, 100, 255, 140);
+
+/* I don't understand why I originally chose 2 different backgrounds for whether
+ * tile is anonymous or not. Null glues are set to transparent, the commented
+ * below resulted in 2 different colors for null glues. */
 const static sf::Color COLOR_ANONYMOUS_TILE_TYPES =
     sf::Color(0.4 * 255, 0.4 * 255, 0.4 * 255);
 const static sf::Color COLOR_TILE_TYPES =
-    sf::Color(0.6 * 255, 0.6 * 255, 0.6 * 255);
+    // sf::Color(0.6 * 255, 0.6 * 255, 0.6 * 255);
+    sf::Color(0.4 * 255, 0.4 * 255, 0.4 * 255);
 
 const static sf::Color COLOR_EDGE_TEXT = sf::Color(0, 102, 255, 255);
 const static sf::Color COLOR_TILE_TEXT = sf::Color::Black;
