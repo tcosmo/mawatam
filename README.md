@@ -41,6 +41,7 @@ make
 The simulator can either be run from a `.yml` input file (see input format below):
 
 ```bash
+./mawatam -f examples/binary_counter.yml
 ./mawatam -f examples/powers_of_two.yml
 ```
 
@@ -58,6 +59,7 @@ You can simulate the constructions presented in the paper by running the followi
 
 ### NAND-NXOR tile set
 
+- `python3 mawatam-tools/four_tiles_circuits.py or_gate 01 | ./mawatam -i`
 - `python3 mawatam-tools/four_tiles_circuits.py prime_circuit 110 | ./mawatam -i`
 - `python3 mawatam-tools/four_tiles_circuits.py crossover 01 | ./mawatam -i`
 
